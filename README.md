@@ -1,97 +1,97 @@
-# 🛒 NexusMarket: Plataforma de Comercio Electrónico Centralizada
+# 🛒 NexusMarket: Centralized E-Commerce Platform
 
-Bienvenido al repositorio principal de **NexusMarket**. Esta plataforma actúa como un intermediario comercial avanzado entre compradores y vendedores, gestionando de forma integral el ciclo de vida completo de un e-commerce: catálogo, multi-bodega, inventario distribuido, carritos de compra, facturación y logística.
-
----
-
-## 🏗️ 1. Arquitectura y Tecnologías
-
-El proyecto está diseñado para ser altamente escalable y mantenible utilizando **Domain-Driven Design (DDD)** y **Arquitectura Hexagonal (Puertos y Adaptadores)**. Esto garantiza que la lógica de negocio pura esté completamente aislada de bases de datos, frameworks o interfaces de usuario.
-
-### Stack Tecnológico:
-- **Lenguaje:** Java 17
-- **Framework Principal:** Spring Boot 4.1.0 (o 3.x)
-- **Persistencia Híbrida:** Spring Data JPA (MySQL) para transacciones ACID y Spring Data MongoDB para modelos flexibles o alto volumen (ej. Auditoría o logs).
-- **Herramientas Core:** Lombok (reducción de boilerplate), Spring Security (Auth & JWT).
+Welcome to the main repository of **NexusMarket**. This platform acts as an advanced commercial intermediary between buyers and sellers, comprehensively managing the entire lifecycle of an e-commerce operation: catalog, multi-warehouse setup, distributed inventory, shopping carts, billing, and logistics.
 
 ---
 
-## 📂 2. Estructura del Proyecto (Capa de Dominio)
+## 🏗️ 1. Architecture and Technologies
 
-Actualmente, el proyecto tiene implementado al 100% su **Core Domain** bajo el paquete base `application.domain`.
+The project is designed to be highly scalable and maintainable using **Domain-Driven Design (DDD)** and **Hexagonal Architecture (Ports and Adapters)**. This ensures that the pure business logic is completely isolated from databases, frameworks, or user interfaces.
+
+### Tech Stack:
+- **Language:** Java 17
+- **Core Framework:** Spring Boot 4.1.0 (or 3.x)
+- **Hybrid Persistence:** Spring Data JPA (MySQL) for ACID transactions and Spring Data MongoDB for flexible models or high volume (e.g., Auditing or logs).
+- **Core Tools:** Lombok (boilerplate reduction), Spring Security (Auth & JWT).
+
+---
+
+## 📂 2. Project Structure (Domain Layer)
+
+Currently, the project has its **Core Domain** 100% implemented under the `application.domain` base package.
 
 ```text
 src/main/java/application/
 └── domain/
-    ├── exception/                    # 🚨 Excepciones de negocio aisladas
+    ├── exception/                    # 🚨 Isolated business exceptions
     │   └── DomainException.java      
     ├── model/
-    │   ├── aggregate/                # 📦 Aggregate Roots (Raíces de Agregación)
-    │   │   └── Order.java            # Controla el ciclo de vida del carrito y pedido
-    │   ├── entity/                   # 🧍 Entidades con Identidad propia
-    │   │   ├── User.java             # Identidad central de autenticación
-    │   │   ├── BuyerProfile.java     # Gestión del comprador (direcciones)
-    │   │   ├── SellerProfile.java    # Gestión del vendedor (tienda)
-    │   │   ├── Product.java          # Catálogo (físico/digital, variantes)
-    │   │   ├── Warehouse.java        # Bodegas del Marketplace o Vendedor
-    │   │   ├── InventoryItem.java    # Control de stock, reservas y dañados
-    │   │   └── OrderItem.java        # Ítems individuales dentro de un Order
-    │   └── valueobject/              # 🏷️ Value Objects Inmutables y Enums
-    │       ├── Money.java            # Cálculos seguros de dinero y moneda
+    │   ├── aggregate/                # 📦 Aggregate Roots
+    │   │   └── Order.java            # Controls cart and order lifecycle
+    │   ├── entity/                   # 🧍 Entities with own Identity
+    │   │   ├── User.java             # Core authentication identity
+    │   │   ├── BuyerProfile.java     # Buyer management (addresses)
+    │   │   ├── SellerProfile.java    # Seller management (storefront)
+    │   │   ├── Product.java          # Catalog (physical/digital, variants)
+    │   │   ├── Warehouse.java        # Marketplace or Seller warehouses
+    │   │   ├── InventoryItem.java    # Stock, reservations, and damaged tracking
+    │   │   └── OrderItem.java        # Individual items within an Order
+    │   └── valueobject/              # 🏷️ Immutable Value Objects and Enums
+    │       ├── Money.java            # Safe money and currency calculations
     │       ├── Sku.java, Email.java, StockLocation.java
     │       ├── UserRole.java         # BUYER, SELLER, LOGISTICS_OPERATOR, ADMIN, SUPERVISOR
-    │       ├── OrderStatus.java      # Estados estrictos del pedido
+    │       ├── OrderStatus.java      # Strict order states
     │       ├── ProductType.java      # PHYSICAL vs DIGITAL
     │       └── WarehouseType.java    
-    └── service/                      # ⚙️ Domain Services (Lógica Orquestada)
+    └── service/                      # ⚙️ Domain Services (Orchestrated Logic)
         ├── InventoryDomainService.java
         └── OrderFulfillmentDomainService.java
 ```
 
-> **Nota:** Cada carpeta del dominio cuenta con su documentación detallada y en inglés en la carpeta raíz `SDD/` (Software Design Document).
+> **Note:** Each domain folder has detailed documentation in the root `SDD/` (Software Design Document) folder.
 
 ---
 
-## 🔄 3. Flujo Operativo del Negocio
+## 🔄 3. Business Operational Flow
 
-El diseño respeta estrictamente la **Especificación Funcional**, asegurando que los cambios de estado y las reservas de inventario ocurran bajo reglas seguras.
+The design strictly adheres to the **Functional Specification**, ensuring that state changes and inventory reservations occur under safe rules.
 
 ```mermaid
 flowchart TD
-    subgraph Ciclo de Vida del Pedido (Order)
-        A([CART]) -->|checkout() + Dirección| B([PENDING_PAYMENT])
-        B -->|Pago Validado| C([PAID])
-        C -->|Despacho Físico| D([SHIPPED])
-        D -->|Entrega Confirmada| E([DELIVERED_FINALIZED])
+    subgraph OrderLifecycle [Order Lifecycle]
+        A([CART]) -->|checkout| B([PENDING_PAYMENT])
+        B -->|payment validated| C([PAID])
+        C -->|physical dispatch| D([SHIPPED])
+        D -->|delivery confirmed| E([DELIVERED_FINALIZED])
     end
 
-    subgraph Impacto en Inventario (InventoryItem)
-        B -.->|Reserva Temporal| R[Aumenta reservedQuantity]
-        C -.->|Consumo Definitivo| C2[Disminuye physicalQuantity y reservedQuantity]
+    subgraph InventoryImpact [Inventory Impact]
+        B -.->|temporary reservation| R[Increase reserved quantity]
+        C -.->|permanent consumption| C2[Decrease physical and reserved quantity]
     end
 ```
 
-### Validaciones Críticas del Dominio Implementadas:
-1. **Gestión de Stock Dañado**: Unidades marcadas como dañadas (`damagedQuantity`) en `InventoryItem` jamás pueden ser reservadas ni sumadas al stock disponible (`getAvailableQuantity()`).
-2. **Reserva Atómica**: El `InventoryDomainService` permite asegurar el stock de múltiples bodegas simultáneamente. Si falta aunque sea un ítem de un SKU, la operación entera es rechazada.
-3. **Consistencia de Pedido**: No se puede proceder al pago (`PENDING_PAYMENT`) de un pedido en `CART` si no se ha registrado una dirección de envío o si el carrito está vacío.
-4. **Productos Digitales vs Físicos**: Distinción clara en la base (`ProductType`) para poder adaptar la logística tradicional.
+### Implemented Critical Domain Validations:
+1. **Damaged Stock Management**: Units marked as damaged (`damagedQuantity`) in `InventoryItem` can never be reserved or added to the available stock (`getAvailableQuantity()`).
+2. **Atomic Reservation**: The `InventoryDomainService` securely handles stock reservations across multiple warehouses simultaneously. If even one unit of a SKU is missing, the entire transaction is rejected.
+3. **Order Consistency**: An order in `CART` status cannot proceed to payment (`PENDING_PAYMENT`) without a registered shipping address or if the cart is empty.
+4. **Digital vs. Physical Products**: Clear distinction at the base level (`ProductType`) to adapt traditional logistics accordingly.
 
 ---
 
-## 🚀 4. Próximos Pasos de Implementación
+## 🚀 4. Next Implementation Steps
 
-Hemos culminado la **Fase 1 (Setup)** y **Fase 2 (Modelado de Dominio)**. Los siguientes hitos a desarrollar en este repositorio son:
+We have completed **Phase 1 (Setup)** and **Phase 2 (Domain Modeling)**. The next milestones to develop in this repository are:
 
-- [ ] **Hito 3: Autenticación, Puertos y Adaptadores**:
-  - Creación de los Casos de Uso (Application Services) en `application.usecase`.
-  - Definición de interfaces (`InputPort`, `OutputPort`).
-  - Implementación de controladores REST (`adapter.in.web`) para conectar Frontends.
-  - Implementación de Repositorios MongoDB/MySQL (`adapter.out.persistence`).
-  - Configuración del Filtro JWT y roles de Spring Security.
-- [ ] **Hito 4: Módulo de Catálogo e Inventario Distribuido**.
-- [ ] **Hito 5: Motor de Carrito y Órdenes Concurrentes**.
-- [ ] **Hito 6: Facturación y Logística Post-Venta**.
+- [ ] **Milestone 3: Authentication, Ports, and Adapters**:
+  - Creation of Use Cases (Application Services) in `application.usecase`.
+  - Definition of interfaces (`InputPort`, `OutputPort`).
+  - Implementation of REST controllers (`adapter.in.web`) to connect Frontends.
+  - Implementation of MongoDB/MySQL Repositories (`adapter.out.persistence`).
+  - Configuration of JWT Filter and Spring Security roles.
+- [ ] **Milestone 4: Catalog Module and Distributed Inventory**.
+- [ ] **Milestone 5: Cart Engine and Concurrent Orders**.
+- [ ] **Milestone 6: Billing and Post-Sale Logistics**.
 
 ---
-*Documento generado y mantenido para la trazabilidad arquitectónica de NexusMarket.*
+*Document generated and maintained for NexusMarket's architectural traceability.*

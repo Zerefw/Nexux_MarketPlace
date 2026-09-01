@@ -16,36 +16,27 @@ The project is designed to be highly scalable and maintainable using **Domain-Dr
 
 ---
 
-## 📂 2. Project Structure (Domain Layer)
+## 📂 2. Project Structure (Domain & Application Layers)
 
-Currently, the project has its **Core Domain** 100% implemented under the `application.domain` base package.
+Currently, the project has its **Core Domain** 100% implemented, and we are advancing with the **Application Layer** (Use Cases and Ports) under the `application` base package.
 
 ```text
 src/main/java/application/
-└── domain/
-    ├── exception/                    # 🚨 Isolated business exceptions
-    │   └── DomainException.java      
-    ├── model/
-    │   ├── aggregate/                # 📦 Aggregate Roots
-    │   │   └── Order.java            # Controls cart and order lifecycle
-    │   ├── entity/                   # 🧍 Entities with own Identity
-    │   │   ├── User.java             # Core authentication identity
-    │   │   ├── BuyerProfile.java     # Buyer management (addresses)
-    │   │   ├── SellerProfile.java    # Seller management (storefront)
-    │   │   ├── Product.java          # Catalog (physical/digital, variants)
-    │   │   ├── Warehouse.java        # Marketplace or Seller warehouses
-    │   │   ├── InventoryItem.java    # Stock, reservations, and damaged tracking
-    │   │   └── OrderItem.java        # Individual items within an Order
-    │   └── valueobject/              # 🏷️ Immutable Value Objects and Enums
-    │       ├── Money.java            # Safe money and currency calculations
-    │       ├── Sku.java, Email.java, StockLocation.java
-    │       ├── UserRole.java         # BUYER, SELLER, LOGISTICS_OPERATOR, ADMIN, SUPERVISOR
-    │       ├── OrderStatus.java      # Strict order states
-    │       ├── ProductType.java      # PHYSICAL vs DIGITAL
-    │       └── WarehouseType.java    
-    └── service/                      # ⚙️ Domain Services (Orchestrated Logic)
-        ├── InventoryDomainService.java
-        └── OrderFulfillmentDomainService.java
+├── domain/                           # 🧠 Core Business Logic (100% Complete)
+│   ├── exception/                    # 🚨 Isolated business exceptions
+│   ├── model/                        # 📦 Aggregates, Entities, Value Objects
+│   └── service/                      # ⚙️ Domain Services (Inventory, Fulfillment)
+├── port/                             # 🔌 Hexagonal Ports (Interfaces)
+│   ├── in/                           # Input Ports (Use Case interfaces)
+│   │   ├── command/                  # Input DTOs (e.g., RegisterBuyerCommand)
+│   │   └── RegisterUserUseCase.java  
+│   └── out/                          # Output Ports (Repository/Encoder interfaces)
+│       ├── UserRepositoryPort.java
+│       ├── BuyerProfileRepositoryPort.java
+│       ├── SellerProfileRepositoryPort.java
+│       └── PasswordEncoderPort.java
+└── usecase/                          # 🚀 Application Services (Use Cases implementations)
+    └── RegisterUserService.java      # Orchestrates user registration logic
 ```
 
 > **Note:** Each domain folder has detailed documentation in the root `SDD/` (Software Design Document) folder.
@@ -81,14 +72,14 @@ flowchart TD
 
 ## 🚀 4. Next Implementation Steps
 
-We have completed **Phase 1 (Setup)** and **Phase 2 (Domain Modeling)**. The next milestones to develop in this repository are:
+We have completed **Phase 1 (Setup)** and **Phase 2 (Domain Modeling)**. 
 
-- [ ] **Milestone 3: Authentication, Ports, and Adapters**:
-  - Creation of Use Cases (Application Services) in `application.usecase`.
-  - Definition of interfaces (`InputPort`, `OutputPort`).
-  - Implementation of REST controllers (`adapter.in.web`) to connect Frontends.
-  - Implementation of MongoDB/MySQL Repositories (`adapter.out.persistence`).
-  - Configuration of JWT Filter and Spring Security roles.
+- [x] **Milestone 3: Authentication, Ports, and Adapters (IN PROGRESS)**:
+  - [x] Creation of Use Cases (Application Services) in `application.usecase`.
+  - [x] Definition of interfaces (`InputPort`, `OutputPort`).
+  - [ ] Implementation of REST controllers (`adapter.in.web`) to connect Frontends.
+  - [ ] Implementation of MongoDB/MySQL Repositories (`adapter.out.persistence`).
+  - [ ] Configuration of JWT Filter and Spring Security roles.
 - [ ] **Milestone 4: Catalog Module and Distributed Inventory**.
 - [ ] **Milestone 5: Cart Engine and Concurrent Orders**.
 - [ ] **Milestone 6: Billing and Post-Sale Logistics**.

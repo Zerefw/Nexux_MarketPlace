@@ -18,31 +18,33 @@ The project is designed to be highly scalable and maintainable using **Domain-Dr
 
 ## 📂 2. Project Structure (Domain, Application & Adapters)
 
-Currently, the project has completely finished the **Domain**, **Application**, and **Infrastructure (Adapters)** for the User Registration milestone.
+Currently, the project has completely finished the **Domain**, **Application**, and **Infrastructure (Adapters)** for the User Registration and Product Catalog milestones.
 
 ```text
 src/main/java/application/
 ├── domain/                           # 🧠 Core Business Logic (100% Complete)
 │   ├── exception/, model/, service/  
 ├── port/                             # 🔌 Hexagonal Ports (Interfaces)
-│   ├── in/                           # Input Ports (Use Case interfaces)
-│   └── out/                          # Output Ports (Repository/Encoder interfaces)
-├── usecase/                          # 🚀 Application Services (Use Cases implementations)
-│   └── RegisterUserService.java      
+│   ├── in/                           # Input Ports (ManageProductUseCase, etc.)
+│   └── out/                          # Output Ports (ProductRepositoryPort, etc.)
+├── usecase/                          # 🚀 Application Services
+│   ├── RegisterUserService.java      
+│   └── ProductCatalogService.java    # Catalog management logic
 ├── adapter/                          # 🌐 Infrastructure Layer
 │   ├── in/web/                       # REST Controllers & DTOs
 │   │   ├── AuthController.java
+│   │   ├── ProductController.java    # Catalog endpoints
 │   │   └── dto/ApiResponse.java
 │   └── out/persistence/              # Database JPA Repositories & Entities
-│       ├── entity/UserJpaEntity.java...
-│       ├── repository/UserJpaRepository.java...
-│       ├── mapper/UserMapper.java...
-│       └── UserPersistenceAdapter.java...
+│       ├── entity/                   # UserJpaEntity, ProductJpaEntity...
+│       ├── repository/               # JpaRepositories
+│       ├── mapper/                   # Mappers (Domain <-> JPA)
+│       └── adapter/                  # Persistence Adapters
 └── config/                           # ⚙️ Security and Framework Configuration
     └── SecurityConfig.java
 ```
 
-> **Note:** Each domain folder has detailed documentation in the root `SDD/` (Software Design Document) folder.
+> **Note:** Each architectural layer has detailed documentation in the root `SDD/` (Software Design Document) folder.
 
 ---
 
@@ -66,10 +68,10 @@ flowchart TD
 ```
 
 ### Implemented Critical Domain Validations:
-1. **Damaged Stock Management**: Units marked as damaged (`damagedQuantity`) in `InventoryItem` can never be reserved or added to the available stock (`getAvailableQuantity()`).
+1. **Damaged Stock Management**: Units marked as damaged (`damagedQuantity`) in `InventoryItem` can never be reserved or added to the available stock.
 2. **Atomic Reservation**: The `InventoryDomainService` securely handles stock reservations across multiple warehouses simultaneously.
-3. **Order Consistency**: An order in `CART` status cannot proceed to payment without a registered shipping address or if the cart is empty.
-4. **Digital vs. Physical Products**: Clear distinction at the base level (`ProductType`) to adapt traditional logistics accordingly.
+3. **Order Consistency**: An order in `CART` status cannot proceed to payment without a registered shipping address.
+4. **Digital vs. Physical Products**: Clear distinction (`ProductType`) strictly mapped to database constraints.
 
 ---
 
@@ -77,13 +79,11 @@ flowchart TD
 
 - [x] **Milestone 1: Base Setup** (COMPLETED)
 - [x] **Milestone 2: Core Domain Modeling** (COMPLETED)
-- [x] **Milestone 3: Authentication, Ports, and Adapters (COMPLETED)**:
-  - [x] Creation of Use Cases (Application Services) in `application.usecase`.
-  - [x] Definition of interfaces (`InputPort`, `OutputPort`).
-  - [x] Implementation of REST controllers (`adapter.in.web`) to connect Frontends.
-  - [x] Implementation of MySQL Repositories & Mappers (`adapter.out.persistence`).
-  - [x] Configuration of Spring Security (BCrypt & Endpoints).
-- [ ] **Milestone 4: Catalog Module and Distributed Inventory**.
+- [x] **Milestone 3: Authentication, Ports, and Adapters** (COMPLETED)
+- [x] **Milestone 4: Catalog Module and Distributed Inventory (COMPLETED)**:
+  - [x] Product Application Services (`ProductCatalogService`).
+  - [x] Persistence Adapters, Mappers, and JPA Entities (`ProductJpaEntity`).
+  - [x] Web REST Controllers (`ProductController`).
 - [ ] **Milestone 5: Cart Engine and Concurrent Orders**.
 - [ ] **Milestone 6: Billing and Post-Sale Logistics**.
 

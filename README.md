@@ -16,27 +16,30 @@ The project is designed to be highly scalable and maintainable using **Domain-Dr
 
 ---
 
-## 📂 2. Project Structure (Domain & Application Layers)
+## 📂 2. Project Structure (Domain, Application & Adapters)
 
-Currently, the project has its **Core Domain** 100% implemented, and we are advancing with the **Application Layer** (Use Cases and Ports) under the `application` base package.
+Currently, the project has completely finished the **Domain**, **Application**, and **Infrastructure (Adapters)** for the User Registration milestone.
 
 ```text
 src/main/java/application/
 ├── domain/                           # 🧠 Core Business Logic (100% Complete)
-│   ├── exception/                    # 🚨 Isolated business exceptions
-│   ├── model/                        # 📦 Aggregates, Entities, Value Objects
-│   └── service/                      # ⚙️ Domain Services (Inventory, Fulfillment)
+│   ├── exception/, model/, service/  
 ├── port/                             # 🔌 Hexagonal Ports (Interfaces)
 │   ├── in/                           # Input Ports (Use Case interfaces)
-│   │   ├── command/                  # Input DTOs (e.g., RegisterBuyerCommand)
-│   │   └── RegisterUserUseCase.java  
 │   └── out/                          # Output Ports (Repository/Encoder interfaces)
-│       ├── UserRepositoryPort.java
-│       ├── BuyerProfileRepositoryPort.java
-│       ├── SellerProfileRepositoryPort.java
-│       └── PasswordEncoderPort.java
-└── usecase/                          # 🚀 Application Services (Use Cases implementations)
-    └── RegisterUserService.java      # Orchestrates user registration logic
+├── usecase/                          # 🚀 Application Services (Use Cases implementations)
+│   └── RegisterUserService.java      
+├── adapter/                          # 🌐 Infrastructure Layer
+│   ├── in/web/                       # REST Controllers & DTOs
+│   │   ├── AuthController.java
+│   │   └── dto/ApiResponse.java
+│   └── out/persistence/              # Database JPA Repositories & Entities
+│       ├── entity/UserJpaEntity.java...
+│       ├── repository/UserJpaRepository.java...
+│       ├── mapper/UserMapper.java...
+│       └── UserPersistenceAdapter.java...
+└── config/                           # ⚙️ Security and Framework Configuration
+    └── SecurityConfig.java
 ```
 
 > **Note:** Each domain folder has detailed documentation in the root `SDD/` (Software Design Document) folder.
@@ -64,22 +67,22 @@ flowchart TD
 
 ### Implemented Critical Domain Validations:
 1. **Damaged Stock Management**: Units marked as damaged (`damagedQuantity`) in `InventoryItem` can never be reserved or added to the available stock (`getAvailableQuantity()`).
-2. **Atomic Reservation**: The `InventoryDomainService` securely handles stock reservations across multiple warehouses simultaneously. If even one unit of a SKU is missing, the entire transaction is rejected.
-3. **Order Consistency**: An order in `CART` status cannot proceed to payment (`PENDING_PAYMENT`) without a registered shipping address or if the cart is empty.
+2. **Atomic Reservation**: The `InventoryDomainService` securely handles stock reservations across multiple warehouses simultaneously.
+3. **Order Consistency**: An order in `CART` status cannot proceed to payment without a registered shipping address or if the cart is empty.
 4. **Digital vs. Physical Products**: Clear distinction at the base level (`ProductType`) to adapt traditional logistics accordingly.
 
 ---
 
-## 🚀 4. Next Implementation Steps
+## 🚀 4. Implementation Steps & Milestones
 
-We have completed **Phase 1 (Setup)** and **Phase 2 (Domain Modeling)**. 
-
-- [x] **Milestone 3: Authentication, Ports, and Adapters (IN PROGRESS)**:
+- [x] **Milestone 1: Base Setup** (COMPLETED)
+- [x] **Milestone 2: Core Domain Modeling** (COMPLETED)
+- [x] **Milestone 3: Authentication, Ports, and Adapters (COMPLETED)**:
   - [x] Creation of Use Cases (Application Services) in `application.usecase`.
   - [x] Definition of interfaces (`InputPort`, `OutputPort`).
-  - [ ] Implementation of REST controllers (`adapter.in.web`) to connect Frontends.
-  - [ ] Implementation of MongoDB/MySQL Repositories (`adapter.out.persistence`).
-  - [ ] Configuration of JWT Filter and Spring Security roles.
+  - [x] Implementation of REST controllers (`adapter.in.web`) to connect Frontends.
+  - [x] Implementation of MySQL Repositories & Mappers (`adapter.out.persistence`).
+  - [x] Configuration of Spring Security (BCrypt & Endpoints).
 - [ ] **Milestone 4: Catalog Module and Distributed Inventory**.
 - [ ] **Milestone 5: Cart Engine and Concurrent Orders**.
 - [ ] **Milestone 6: Billing and Post-Sale Logistics**.

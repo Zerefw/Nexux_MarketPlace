@@ -1,41 +1,43 @@
 # Entities Documentation
 
 ## Overview
-The `entity` package contains domain objects defined primarily by their identity (`id`), rather than their attributes. They hold mutable state and define business invariants. We use Lombok's `@Builder` and restrict constructor access to enforce the use of explicit `create()` factory methods, preventing the creation of invalid states.
+The `entity` package contains domain objects whose identity is defined by a unique identifier (ID) rather than their attributes. These objects maintain mutable state and safeguard business invariants. Access to constructors is restricted to enforce the use of static factory methods (e.g., `create()`), preventing the instantiation of entities with invalid states.
 
-## Classes
+## Implemented Classes
 
 ### `User`
-- **Responsibility**: The central identity representation for authentication and system access.
+- **Responsibility**: Central identity representation for authentication and access.
 - **Key Attributes**: `identificationDocument`, `fullName`, `email`, `role`, `active`.
-- **Domain Logic**: Starts strictly as `active = true` via the `create()` method. Exposes `suspend()` and `activate()` behaviors to control access.
+- **Domain Logic**: Strictly initializes in an active state. Exposes behaviors such as `suspend()` and `activate()` to control access according to administrative requirements.
 
 ### `BuyerProfile`
-- **Responsibility**: Manages the specific commercial data of a buyer, separate from core authentication logic.
-- **Key Attributes**: `userId` (link to User), `primaryAddress`, `secondaryAddresses`, `commercialStateActive`.
-- **Domain Logic**: Can add multiple secondary addresses but enforces the existence of at least one primary address during creation.
+- **Responsibility**: Manages specific commercial data of a buyer, isolating this from basic authentication logic.
+- **Key Attributes**: `userId` (link to `User`), `primaryAddress`, `secondaryAddresses`, `commercialStateActive`.
+- **Domain Logic**: Facilitates the addition of secondary addresses, validating the integrity of shipping data.
 
 ### `SellerProfile`
-- **Responsibility**: Represents a merchant's storefront in the marketplace.
+- **Responsibility**: Represents the commercial profile of a seller (merchant) within the marketplace.
 - **Key Attributes**: `userId`, `storeName`, `taxId`, `contactEmail`, `active`.
+- **Domain Logic**: Maintains updated fiscal identifiers and coordinates store operability.
 
 ### `Product`
-- **Responsibility**: Represents a catalog item.
-- **Key Attributes**: `sku`, `price` (Money), `type` (ProductType), `variants` (e.g., Color, Size).
-- **Domain Logic**: Ensures that products are safely instantiated with all required metadata (name, price, sellerId) before being active in the catalog.
+- **Responsibility**: Represents a base item within the commercial catalog.
+- **Key Attributes**: `sku`, `price`, `type`, `variants`.
+- **Domain Logic**: Guarantees that the item possesses mandatory meta-information and allows for logical deactivation from the catalog (`DeactivateProductService`).
 
 ### `Warehouse`
-- **Responsibility**: Represents a geographical storage location.
-- **Key Attributes**: `ownerId`, `name`, `locationAddress`, `type` (WarehouseType).
+- **Responsibility**: Represents a geographic or operational storage location.
+- **Key Attributes**: `ownerId`, `name`, `locationAddress`, `type`, `active`.
+- **Domain Logic**: Allows registration and deactivation of operational logistical facilities.
 
 ### `InventoryItem`
-- **Responsibility**: Manages physical and reserved stock for a specific SKU inside a specific Warehouse.
+- **Responsibility**: Administers physical stock and holdbacks for a specific SKU within a given warehouse.
 - **Key Attributes**: `physicalQuantity`, `reservedQuantity`, `damagedQuantity`.
 - **Domain Logic**:
-  - `getAvailableQuantity()`: Calculates actual availability (`physicalQuantity - reservedQuantity - damagedQuantity`).
-  - `reserve()`: Secures items for checkout, preventing negative stock.
-  - `reportDamaged()`: Isolates broken/damaged units so they cannot be sold or reserved (Critical Business Rule from functional specification).
+  - `getAvailableQuantity()`: Calculates actual availability excluding shrinkage and holdbacks.
+  - `reserve()`: Secures stock for the purchase process, protecting the system from negative balances.
+  - `reportDamaged()`: Isolates damaged merchandise, preventing its commercialization (critical business rule).
 
 ### `OrderItem`
-- **Responsibility**: A single line item within a customer's order.
-- **Domain Logic**: Calculates its own `subTotal` dynamically safely using the `Money` value object.
+- **Responsibility**: Represents an individual purchase line within a global order.
+- **Domain Logic**: Computes its own subtotal dynamically using value objects to guarantee arithmetic precision.

@@ -1,14 +1,7 @@
 package application.port.in.command;
 
-import lombok.Builder;
-import lombok.Value;
-
-@Value
-@Builder
-public class RegisterBuyerCommand {
-    String identificationDocument;
-    String fullName;
-    String email;
-    String rawPassword;
-    String primaryAddress;
+/**
+ * Comando para la operacion de RegisterBuyer.
+ */
+public record RegisterBuyerCommand() {
 }

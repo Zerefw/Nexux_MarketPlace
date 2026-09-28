@@ -1,21 +1,31 @@
-# Infrastructure Layer (Web Adapters) Documentation
+# Infrastructure Layer Documentation (Web Adapters)
 
 ## Overview
-The `adapter.in.web` package represents the **Primary Adapters** (Inbound). These are REST Controllers responsible for receiving HTTP requests from clients (React, Angular, Postman, etc.), mapping them to the standard Input Commands, and returning a consistent JSON response.
+The `adapter.in.web` package contains the Primary (inbound) Adapters. These REST controllers are responsible for receiving HTTP requests from clients, mapping incoming data structures to standard Use Case input commands, and returning a unified and consistent JSON response.
 
-## Standards
-- **Global Responses**: Every endpoint returns an `ApiResponse<T>` object to maintain a strict frontend contract (`{ success: true, message: "...", data: {...} }`).
-- **DTOs**: Domain entities are never returned directly to the client. They are mapped to lightweight Data Transfer Objects (e.g., `UserResponseDTO`, `ProductResponseDTO`) to hide internal logic and sensitive data (like encrypted passwords or internal flags).
+## Implementation Standards
+- **Global Responses**: All endpoints return an object of type `ApiResponse<T>` to maintain a strict contract with the API consumers (`{ success: true, message: "...", data: {...} }`).
+- **Data Transfer Objects (DTO)**: Domain entities are never directly exposed through the controllers. Information is mapped using DTOs (e.g., `UserResponseDTO`, `ProductResponseDTO`) to hide internal logic and sensitive data.
 
-## Implemented Controllers
+## Projected Controllers (30 Services)
 
-### `AuthController`
-- **Endpoints**:
-  - `POST /api/v1/auth/register/buyer`
-  - `POST /api/v1/auth/register/seller`
-- **Delegation**: Relies on `RegisterUserUseCase`.
+### Authentication and User Controller (`UserController` / `AuthController`)
+- Manages the services: `RegisterBuyerService`, `RegisterSellerService`, `SuspendUserService`, `ActivateUserService`, `AddSecondaryAddressService`, `UpdateSellerTaxIdService`.
 
-### `ProductController`
-- **Endpoints**:
-  - `POST /api/v1/catalog/products`
-- **Delegation**: Relies on `ManageProductUseCase` to add new physical or digital products to the seller's catalog.
+### Catalog Controller (`ProductCatalogController`)
+- Manages the services: `CreateProductService`, `UpdateProductService`, `DeactivateProductService`, `AddProductVariantService`, `FindProductBySkuService`, `ListActiveProductsService`.
+
+### Warehouse Controller (`WarehouseController`)
+- Manages the services: `RegisterWarehouseService`, `DeactivateWarehouseService`.
+
+### Inventory Controller (`InventoryController`)
+- Manages the services: `AddPhysicalStockService`, `ReportDamagedStockService`, `GetAvailableStockService`.
+
+### Order and Cart Controller (`OrderController`)
+- Manages the services: `CreateCartService`, `AddItemToCartService`, `RemoveItemFromCartService`, `CheckoutOrderService`, `CancelOrderService`.
+
+### Logistics Controller (`LogisticsController`)
+- Manages the services: `MarkOrderAsPaidService`, `ShipOrderService`, `DeliverOrderService`.
+
+### Refund Controller (`RefundController`)
+- Manages the service: `ProcessRefundService`.

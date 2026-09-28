@@ -1,0 +1,14 @@
+package application.port.in;
+
+import application.port.in.command.UpdateProductCommand;
+
+/**
+ * Puerto de entrada para el caso de uso UpdateProduct.
+ */
+public interface UpdateProductUseCase {
+    /**
+     * Ejecuta el caso de uso.
+     * @param command Comando con los datos requeridos
+     */
+    void execute(UpdateProductCommand command);
+}

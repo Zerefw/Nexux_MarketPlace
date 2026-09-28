@@ -1,15 +1,15 @@
 # Domain Exceptions Documentation
 
 ## Overview
-The `exception` package contains custom exception classes used exclusively within the Domain Layer. In Domain-Driven Design (DDD), the domain must remain completely isolated from infrastructure, frameworks, or delivery mechanisms (like HTTP status codes). 
+The `exception` package contains custom exception classes exclusively used in the Domain Layer. According to Domain-Driven Design (DDD), the business core must remain completely isolated from infrastructure implementations, frameworks, and delivery mechanisms (such as HTTP status codes).
 
-## Classes
+## Implemented Classes
 
 ### `DomainException`
 - **Type**: `RuntimeException`
-- **Purpose**: Acts as the primary base exception for any business rule violation or invariant failure within NexusMarket.
-- **Usage Context**: 
-  - Thrown during object instantiation (e.g., inside factory methods) if required parameters are missing or invalid.
-  - Thrown when attempting an invalid state transition (e.g., trying to mark a `CART` order directly as `SHIPPED`).
-  - Thrown when a business constraint is violated (e.g., insufficient stock available for an order).
-- **Design Decision**: Extending `RuntimeException` avoids checked exception boilerplate, keeping business logic clean. It will be caught globally by the Application/Infrastructure layer (e.g., a `@RestControllerAdvice` in Spring) and translated into the appropriate API error response (like a 400 Bad Request or 409 Conflict).
+- **Purpose**: Acts as the primary base exception to indicate any violation of business rules or the breach of invariants within the 30 services defined for the NexusMarket system.
+- **Contexts of Use**:
+  - Thrown during the instantiation of domain objects (e.g., within factory methods) if the provided parameters are invalid or null.
+  - Thrown on invalid state transitions (e.g., attempting to transition an order in `CART` state directly to the logistical `SHIPPED` state).
+  - Thrown upon violating business constraints (e.g., insufficient physical inventory balance to cover a reservation, or attempting to activate a non-existent user).
+- **Architectural Design Decision**: Extending `RuntimeException` prevents the propagation of checked exceptions, preserving the readability and cleanliness of business logic. These exceptions are globally intercepted by the application or infrastructure layer (e.g., through global exception handlers) to be translated into standardized error responses.

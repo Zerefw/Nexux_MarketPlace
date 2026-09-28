@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * Entidad que representa una Bodega.
+ */
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -18,8 +21,11 @@ public class Warehouse {
     private WarehouseType type;
     private boolean active;
 
+    /**
+     * Crea una nueva bodega.
+     */
     public static Warehouse create(String ownerId, String name, String locationAddress, WarehouseType type) {
-        if (name == null || name.isBlank()) throw new DomainException("Name is required");
+        if (name == null || name.isBlank()) throw new DomainException("El nombre es requerido");
         
         return Warehouse.builder()
                 .ownerId(ownerId)
@@ -28,5 +34,12 @@ public class Warehouse {
                 .type(type)
                 .active(true)
                 .build();
+    }
+    
+    /**
+     * Desactiva la bodega.
+     */
+    public void deactivate() {
+        this.active = false;
     }
 }

@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Agregado raiz que representa una Orden de compra.
+ */
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -27,8 +30,11 @@ public class Order {
     private LocalDateTime createdAt;
     private String shippingAddress;
 
+    /**
+     * Crea un carrito vacio.
+     */
     public static Order createCart(String buyerId, String currency) {
-        if (buyerId == null) throw new DomainException("Buyer ID is required");
+        if (buyerId == null) throw new DomainException("El ID del comprador es obligatorio");
 
         return Order.builder()
                 .buyerId(buyerId)
@@ -39,12 +45,18 @@ public class Order {
                 .build();
     }
 
+    /**
+     * Establece la direccion de envio.
+     */
     public void setShippingAddress(String address) {
         this.shippingAddress = address;
     }
 
+    /**
+     * Anade un item a la orden.
+     */
     public void addItem(OrderItem item) {
-        if (this.status != OrderStatus.CART) throw new DomainException("Items can only be added to CART");
+        if (this.status != OrderStatus.CART) throw new DomainException("Solo se pueden agregar items en estado CART");
         this.items.add(item);
         recalculateTotal();
     }
@@ -59,28 +71,60 @@ public class Order {
         this.totalAmount = total;
     }
 
+    /**
+     * Transiciona a pendiente de pago.
+     */
     public void checkout() {
-        if (this.status != OrderStatus.CART) throw new DomainException("Only CART can checkout");
+        if (this.status != OrderStatus.CART) throw new DomainException("Solo desde CART se puede hacer checkout");
         if (this.shippingAddress == null || this.shippingAddress.isBlank()) {
-            throw new DomainException("Shipping address is required for checkout");
+            throw new DomainException("La direccion de envio es obligatoria para el checkout");
         }
-        if (this.items.isEmpty()) throw new DomainException("Cannot checkout empty cart");
+        if (this.items.isEmpty()) throw new DomainException("No se puede hacer checkout a un carrito vacio");
         this.status = OrderStatus.PENDING_PAYMENT;
     }
 
+    /**
+     * Marca la orden como pagada.
+     */
     public void markAsPaid() {
-        if (this.status != OrderStatus.PENDING_PAYMENT) throw new DomainException("Order must be PENDING_PAYMENT");
+        if (this.status != OrderStatus.PENDING_PAYMENT) throw new DomainException("La orden debe estar en PENDING_PAYMENT");
         this.status = OrderStatus.PAID;
     }
 
-    public void markAsShipped() {
-        if (this.status != OrderStatus.PAID) throw new DomainException("Order must be PAID to ship");
+    /**
+     * Marca la orden como despachada.
+     */
+    public void ship() {
+        if (this.status != OrderStatus.PAID) throw new DomainException("La orden debe estar en PAID para despacharse");
         this.status = OrderStatus.SHIPPED;
     }
 
-    public void markAsDelivered() {
-        if (this.status != OrderStatus.SHIPPED) throw new DomainException("Order must be SHIPPED to be delivered");
+    /**
+     * Marca la orden como entregada.
+     */
+    public void deliver() {
+        if (this.status != OrderStatus.SHIPPED) throw new DomainException("La orden debe estar en SHIPPED para entregarse");
         this.status = OrderStatus.DELIVERED_FINALIZED;
+    }
+    
+    /**
+     * Cancela la orden.
+     */
+    public void cancel() {
+        if (this.status == OrderStatus.SHIPPED || this.status == OrderStatus.DELIVERED_FINALIZED) {
+            throw new DomainException("No se puede cancelar en el estado actual");
+        }
+        this.status = OrderStatus.CANCELLED;
+    }
+    
+    /**
+     * Reembolsa la orden.
+     */
+    public void refund() {
+        if (this.status != OrderStatus.PAID && this.status != OrderStatus.SHIPPED && this.status != OrderStatus.DELIVERED_FINALIZED) {
+            throw new DomainException("La orden no esta en un estado reembolsable");
+        }
+        this.status = OrderStatus.REFUNDED;
     }
 
     public List<OrderItem> getItems() {

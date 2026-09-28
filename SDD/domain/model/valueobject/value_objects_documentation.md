@@ -1,44 +1,44 @@
-# Value Objects & Enums Documentation
+# Value Objects and Enumerations Documentation
 
 ## Overview
-The `valueobject` package contains classes that represent descriptive aspects of the domain with no conceptual identity. In DDD, Value Objects (VOs) are immutable, self-validating, and compared by their properties, not by reference. We heavily leverage Lombok's `@Value` to enforce immutability.
+The `valueobject` package houses classes that represent descriptive aspects of the domain devoid of conceptual identity. In DDD, Value Objects (VOs) are immutable, self-validate upon instantiation, and are strictly compared by the value of their properties and not by memory references.
 
-## Value Objects
+## Implemented Value Objects
 
 ### `Money`
-- **Responsibility**: Represents a monetary amount combined with its currency.
+- **Responsibility**: Represents an indivisible economic amount of its currency.
 - **Attributes**: `amount` (BigDecimal), `currency` (String).
-- **Behaviors**: Contains domain logic for safe addition (`add`) and multiplication (`multiply`). It actively prevents mathematical operations between different currencies, throwing a `DomainException`.
+- **Immersed Logic**: Defines safe arithmetic operations (`add`, `multiply`). Strictly prevents operations between disparate currencies by throwing domain exceptions.
 
 ### `Email`
-- **Responsibility**: Encapsulates email validation.
+- **Responsibility**: Encapsulates and validates the format of email addresses.
 - **Attributes**: `address` (String).
-- **Behaviors**: Guarantees that any instantiated `Email` object contains an `@` symbol and is not empty.
+- **Immersed Logic**: Ensures that the object contains a valid formal structure before permitting its use in the domain.
 
 ### `Sku` (Stock Keeping Unit)
-- **Responsibility**: Represents a unique identifier for physical and digital products.
+- **Responsibility**: Unique referential identifier for catalog and inventory products.
 - **Attributes**: `code` (String).
-- **Behaviors**: Self-validates against null or blank values upon creation.
+- **Immersed Logic**: Prevents the creation of empty or null codes, ensuring traceability.
 
 ### `StockLocation`
-- **Responsibility**: Represents a physical location inside a warehouse.
+- **Responsibility**: Three-dimensional physical location within a logistical facility.
 - **Attributes**: `aisle`, `rack`, `shelf`.
-- **Behaviors**: Ensures complete geographical coordinates within a facility.
+- **Immersed Logic**: Guarantees that the coordinates are complete.
 
-## Enumerations (Business States & Types)
+## Enumerations (Business States and Types)
 
 ### `UserRole`
 - **Values**: `BUYER`, `SELLER`, `LOGISTICS_OPERATOR`, `ADMIN`, `SUPERVISOR`.
-- **Purpose**: Defines the strict authorization boundaries within the NexusMarket platform, as established in the Functional Specification.
+- **Purpose**: Demarcates the boundaries of authorization and privileges within the platform.
 
 ### `OrderStatus`
-- **Values**: `CART`, `PENDING_PAYMENT`, `PAID`, `SHIPPED`, `DELIVERED_FINALIZED`.
-- **Purpose**: Represents the strict lifecycle of an order. Ensures an order cannot bypass logical steps.
+- **Values**: `CART`, `PENDING_PAYMENT`, `PAID`, `SHIPPED`, `DELIVERED`, `CANCELLED`.
+- **Purpose**: Stipulates the strict lifecycle of orders. Prevents the evasion of transactional or operational steps.
 
 ### `ProductType`
 - **Values**: `PHYSICAL`, `DIGITAL`.
-- **Purpose**: Distinguishes fulfillment logic. Physical products require warehouse stock and shipping, while digital products bypass the logistics chain.
+- **Purpose**: Differentiates logistical fulfillment logic. Physical products demand warehouse management, whereas digital ones omit it.
 
 ### `WarehouseType`
 - **Values**: `MARKETPLACE`, `SELLER`.
-- **Purpose**: Identifies whether a storage facility belongs centrally to NexusMarket or independently to a specific seller.
+- **Purpose**: Identifies the operational ownership of the storage facility.

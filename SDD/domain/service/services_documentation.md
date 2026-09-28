@@ -1,23 +1,41 @@
 # Domain Services Documentation
 
 ## Overview
-The `service` package contains Domain Services. In Domain-Driven Design (DDD), Domain Services are stateless classes that encapsulate complex business logic which doesn't naturally fit inside a single Entity or Aggregate. They typically orchestrate operations spanning multiple distinct domain objects (e.g., interacting with both `Order` and `InventoryItem`).
+The `service` package contains Domain Services. According to Domain-Driven Design (DDD) principles, Domain Services are stateless classes that encapsulate complex business logic that does not inherently belong to a single Entity or Aggregate. Typically, they orchestrate operations spanning multiple distinct domain objects, guaranteeing transactional consistency and the integrity of business rules at a fundamental level.
 
-## Classes
+## Inventory Module
 
-### `InventoryDomainService`
-- **Responsibility**: Handles the complex logic of reserving physical inventory across potentially multiple inventory batches/warehouses when a customer places an order.
-- **Flow**:
-  1. Validates that the requested order and inventory item lists are present.
-  2. Iterates over each `OrderItem` inside the `Order`.
-  3. Calculates the `totalAvailable` stock across all matching `InventoryItem` entities.
-  4. Throws a `DomainException` if stock is insufficient, preventing the transaction from proceeding.
-  5. Distributes the reservation logic securely across the available units, modifying the internal `reservedQuantity` of the affected `InventoryItem` entities incrementally.
+### `InventoryReservationDomainService`
+- **Responsibility**: Manages the critical and complex logic of reserving distributed physical inventory across multiple lots or warehouses at the moment a customer confirms the intent to purchase.
+- **Execution Flow**:
+  1. Validates the integrity of the lists corresponding to the requested order and the inventory items.
+  2. Iterates sequentially over each `OrderItem` contained in the `Order`.
+  3. Calculates the consolidated available stock across matching `InventoryItem` entities.
+  4. Throws a domain exception if stock is insufficient, aborting the transaction and preventing inconsistencies.
+  5. Securely distributes the reservation across available units, incrementing the internal `reservedQuantity` variable of affected entities.
+
+### `InventoryReleaseDomainService`
+- **Responsibility**: Restores the availability of previously withheld inventory, typically invoked when an order expires due to lack of payment or is explicitly cancelled.
+- **Execution Flow**:
+  1. Identifies active reservations linked to the aborted transaction.
+  2. Atomically decrements the `reservedQuantity` variable in the corresponding `InventoryItem` objects.
+  3. Ensures that the stock is relisted as available for future commercial transactions.
+
+## Orders and Cart Module
 
 ### `OrderFulfillmentDomainService`
-- **Responsibility**: Manages the critical transition when an order's payment is confirmed.
-- **Flow**:
-  1. Modifies the `Order` aggregate state by invoking `markAsPaid()`.
-  2. Iterates over the previously reserved `InventoryItem` entities that correspond to this order.
-  3. Consumes the reserved stock permanently (converting a temporary `reservedQuantity` hold into an actual deduction of `physicalQuantity`).
-  4. Ensures absolute consistency between the financial state of the application (PAID order) and the logistical state (Inventory consumed).
+- **Responsibility**: Administers the critical state transition when the receipt of economic funds for an order is confirmed.
+- **Execution Flow**:
+  1. Mutates the state of the aggregated `Order` entity by executing the corresponding payment method.
+  2. Iterates over the `InventoryItem` entities previously reserved for this specific order.
+  3. Effects the definitive consumption of stock, converting the temporary retention (`reservedQuantity`) into a permanent deduction of the total physical quantity (`physicalQuantity`).
+  4. Guarantees absolute consistency between the financial state of the application and the reality of the logistics system.
+
+## Refunds and Returns Module
+
+### `ReturnInventoryDomainService`
+- **Responsibility**: Handles the reinstatement of units returned by buyers back into available physical stock within the logistical inventory.
+- **Execution Flow**:
+  1. Receives the post-delivery merchandise return instruction.
+  2. Increments the physical stock of the `InventoryItem`s in the destination warehouse designated for returns.
+  3. Maintains the traceability of returned items and guarantees that the stock increase aligns with refund resolutions processed by the application services.

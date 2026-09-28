@@ -12,6 +12,9 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entidad que representa un producto en el sistema.
+ */
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -27,9 +30,12 @@ public class Product {
     private List<String> variants = new ArrayList<>();
     private boolean active;
 
+    /**
+     * Crea un nuevo producto.
+     */
     public static Product create(Sku sku, String sellerId, String name, Money price, ProductType type) {
         if (sku == null || sellerId == null || name == null || price == null || type == null) {
-            throw new DomainException("Required fields are missing");
+            throw new DomainException("Faltan campos requeridos");
         }
         return Product.builder()
                 .sku(sku)
@@ -42,9 +48,27 @@ public class Product {
                 .build();
     }
 
+    /**
+     * Anade una variante al producto.
+     */
     public void addVariant(String variant) {
         if (variant != null && !variant.isBlank()) {
             this.variants.add(variant);
         }
+    }
+    
+    /**
+     * Actualiza los detalles del producto.
+     */
+    public void updateDetails(String description, Money price) {
+        this.description = description;
+        this.price = price;
+    }
+    
+    /**
+     * Desactiva el producto.
+     */
+    public void deactivate() {
+        this.active = false;
     }
 }

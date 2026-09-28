@@ -9,6 +9,9 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Perfil de comprador.
+ */
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -19,9 +22,12 @@ public class BuyerProfile {
     private List<String> secondaryAddresses = new ArrayList<>();
     private boolean commercialStateActive;
 
+    /**
+     * Crea perfil de comprador.
+     */
     public static BuyerProfile create(String userId, String primaryAddress) {
-        if (userId == null) throw new DomainException("User ID is required");
-        if (primaryAddress == null || primaryAddress.isBlank()) throw new DomainException("Primary address required");
+        if (userId == null) throw new DomainException("El ID de usuario es requerido");
+        if (primaryAddress == null || primaryAddress.isBlank()) throw new DomainException("Direccion principal requerida");
 
         return BuyerProfile.builder()
                 .userId(userId)
@@ -31,6 +37,9 @@ public class BuyerProfile {
                 .build();
     }
 
+    /**
+     * Anade direccion secundaria.
+     */
     public void addSecondaryAddress(String address) {
         if (address != null && !address.isBlank()) {
             this.secondaryAddresses.add(address);

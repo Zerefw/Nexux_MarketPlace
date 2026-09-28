@@ -10,11 +10,14 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entidad que representa un Usuario.
+ */
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class User {
-    private String id; // UUID or String based for MongoDB/MySQL mix
+    private String id;
     private String identificationDocument;
     private String fullName;
     private Email email;
@@ -22,8 +25,11 @@ public class User {
     private boolean active;
     private LocalDateTime createdAt;
 
+    /**
+     * Crea un nuevo usuario.
+     */
     public static User create(String identificationDocument, String fullName, Email email, UserRole role) {
-        if (identificationDocument == null || identificationDocument.isBlank()) throw new DomainException("ID Document is required");
+        if (identificationDocument == null || identificationDocument.isBlank()) throw new DomainException("El documento de identidad es requerido");
         
         return User.builder()
                 .identificationDocument(identificationDocument)
@@ -35,6 +41,13 @@ public class User {
                 .build();
     }
 
+    /**
+     * Suspende al usuario.
+     */
     public void suspend() { this.active = false; }
+    
+    /**
+     * Activa al usuario.
+     */
     public void activate() { this.active = true; }
 }

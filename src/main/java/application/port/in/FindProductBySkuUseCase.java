@@ -1,0 +1,14 @@
+package application.port.in;
+
+import application.port.in.command.FindProductBySkuCommand;
+
+/**
+ * Puerto de entrada para el caso de uso FindProductBySku.
+ */
+public interface FindProductBySkuUseCase {
+    /**
+     * Ejecuta el caso de uso.
+     * @param command Comando con los datos requeridos
+     */
+    void execute(FindProductBySkuCommand command);
+}

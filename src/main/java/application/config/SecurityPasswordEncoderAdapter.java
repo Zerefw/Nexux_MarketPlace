@@ -1,6 +1,6 @@
 package application.config;
 
-import application.port.out.PasswordEncoderPort;
+import application.domain.ports.out.PasswordEncoderPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;

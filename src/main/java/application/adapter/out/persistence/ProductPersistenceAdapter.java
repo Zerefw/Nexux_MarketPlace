@@ -12,17 +12,17 @@ import application.domain.model.entity.Product;
 // Value Object
 import application.domain.model.valueobject.Sku;
 // Puerto a implementar
-import application.port.out.ProductRepositoryPort;
+import application.domain.ports.out.ProductRepositoryPort;
 // Lombok
 import lombok.RequiredArgsConstructor;
-// Anotación de Spring
+// AnotaciÃ³n de Spring
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 // Marca la clase como un Bean gestionado por Spring
 @Component
-// Constructor automático para dependencias finales
+// Constructor automÃ¡tico para dependencias finales
 @RequiredArgsConstructor
 // Cumple con el contrato exigido por el Application Service
 public class ProductPersistenceAdapter implements ProductRepositoryPort {
@@ -30,7 +30,7 @@ public class ProductPersistenceAdapter implements ProductRepositoryPort {
     // Dependencia al Repositorio de base de datos
     private final ProductJpaRepository productJpaRepository;
 
-    // Guarda el producto mapeándolo a JPA
+    // Guarda el producto mapeÃ¡ndolo a JPA
     @Override
     public Product save(Product product) {
         // Transforma de Pura a Sucia (JPA)
@@ -55,10 +55,10 @@ public class ProductPersistenceAdapter implements ProductRepositoryPort {
         return productJpaRepository.findBySku(sku.getCode()).map(ProductMapper::toDomainEntity);
     }
 
-    // Valida la existencia de un SKU rápidamente
+    // Valida la existencia de un SKU rÃ¡pidamente
     @Override
     public boolean existsBySku(Sku sku) {
-        // Usa método optimizado del repositorio Spring Data
+        // Usa mÃ©todo optimizado del repositorio Spring Data
         return productJpaRepository.existsBySku(sku.getCode());
     }
 }

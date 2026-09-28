@@ -7,8 +7,8 @@ import application.adapter.out.persistence.repository.BuyerProfileJpaRepository;
 import application.adapter.out.persistence.repository.SellerProfileJpaRepository;
 import application.domain.model.entity.BuyerProfile;
 import application.domain.model.entity.SellerProfile;
-import application.port.out.BuyerProfileRepositoryPort;
-import application.port.out.SellerProfileRepositoryPort;
+import application.domain.ports.out.BuyerProfileRepositoryPort;
+import application.domain.ports.out.SellerProfileRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

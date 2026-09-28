@@ -7,10 +7,10 @@ import application.adapter.in.web.dto.ProductResponseDTO;
 // Importa Entidad Dominio
 import application.domain.model.entity.Product;
 // Importa Caso de Uso
-import application.port.in.ManageProductUseCase;
+import application.domain.ports.in.ManageProductUseCase;
 // Importa Comando (DTO entrada)
-import application.port.in.command.CreateProductCommand;
-// Anotación Lombok
+import application.domain.ports.in.command.CreateProductCommand;
+// AnotaciÃ³n Lombok
 import lombok.RequiredArgsConstructor;
 // Utilidades de HTTP Spring
 import org.springframework.http.ResponseEntity;
@@ -18,23 +18,23 @@ import org.springframework.web.bind.annotation.*;
 
 // Registra la clase como un manejador de Peticiones REST
 @RestController
-// Asigna la ruta general del API para el catálogo
+// Asigna la ruta general del API para el catÃ¡logo
 @RequestMapping("/api/v1/catalog/products")
 // Inyecta dependencias
 @RequiredArgsConstructor
 public class ProductController {
 
-    // Puerto de entrada para administrar catálogo
+    // Puerto de entrada para administrar catÃ¡logo
     private final ManageProductUseCase manageProductUseCase;
 
-    // Asocia peticiones HTTP POST a la creación de productos
+    // Asocia peticiones HTTP POST a la creaciÃ³n de productos
     @PostMapping
     public ResponseEntity<ApiResponse<ProductResponseDTO>> createProduct(@RequestBody CreateProductCommand command) {
-        // Delega la responsabilidad de creación a la Capa de Aplicación
+        // Delega la responsabilidad de creaciÃ³n a la Capa de AplicaciÃ³n
         Product createdProduct = manageProductUseCase.createProduct(command);
         // Toma el producto puro retornado y lo limpia en un DTO para el exterior
         ProductResponseDTO responseDto = ProductResponseDTO.fromDomain(createdProduct);
-        // Devuelve el código HTTP 200 encapsulando en el Wrapper estándar del proyecto
+        // Devuelve el cÃ³digo HTTP 200 encapsulando en el Wrapper estÃ¡ndar del proyecto
         return ResponseEntity.ok(ApiResponse.ok("Product successfully added to catalog", responseDto));
     }
 }

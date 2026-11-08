@@ -1,30 +1,33 @@
-package application.domain.services;
+package application.domain.services.order;
 
+import application.domain.model.aggregate.Order;
+import application.domain.ports.in.command.order.CreateCartCommand;
+import application.domain.ports.in.order.CreateCartUseCase;
+import application.domain.ports.out.order.OrderRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import application.domain.ports.in.CreateCartUseCase;
-import application.domain.ports.in.command.CreateCartCommand;
-import application.domain.ports.out.OrderRepositoryPort;
 
 /**
- * Servicio de aplicacion para inicializar una orden en estado CART (crear carrito).
+ * Servicio de aplicacion para inicializar una orden en estado CART (crear carrito de compras).
  * Implementa el caso de uso CreateCartUseCase.
  */
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class CreateCartService implements CreateCartUseCase {
 
     private final OrderRepositoryPort orderRepositoryPort;
 
     /**
-     * Ejecuta la logica de negocio principal para el caso de uso.
-     * 
-     * @param command Comando que contiene los parametros de entrada necesarios.
+     * Crea un nuevo carrito de compras vacio para el comprador especificado.
+     *
+     * @param command Comando que contiene el identificador del comprador y la moneda.
+     * @return Agregado Order inicializado y persistido.
      */
     @Override
-    public void execute(CreateCartCommand command) {
-        // TODO: Implementar la logica de dominio delegando en entidades y servicios inyectados.
+    @Transactional
+    public Order execute(CreateCartCommand command) {
+        Order cart = Order.createCart(command.buyerId(), command.currency());
+        return orderRepositoryPort.save(cart);
     }
 }

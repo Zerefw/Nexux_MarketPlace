@@ -1,14 +1,18 @@
-package application.domain.ports.in;
+package application.domain.ports.in.order;
 
-import application.domain.ports.in.command.CheckoutOrderCommand;
+import application.domain.model.aggregate.Order;
+import application.domain.ports.in.command.order.CheckoutOrderCommand;
 
 /**
- * Puerto de entrada para el caso de uso CheckoutOrder.
+ * Puerto de entrada para el caso de uso de checkout de una orden.
  */
 public interface CheckoutOrderUseCase {
+
     /**
-     * Ejecuta el caso de uso.
-     * @param command Comando con los datos requeridos
+     * Procesa el checkout del carrito reservando el inventario requerido y cambiando el estado a PENDING_PAYMENT.
+     *
+     * @param command Comando con el identificador de la orden y la direccion de envio.
+     * @return Agregado Order en estado PENDING_PAYMENT.
      */
-    void execute(CheckoutOrderCommand command);
+    Order execute(CheckoutOrderCommand command);
 }

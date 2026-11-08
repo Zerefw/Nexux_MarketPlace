@@ -1,14 +1,18 @@
-package application.domain.ports.in;
+package application.domain.ports.in.refund;
 
-import application.domain.ports.in.command.ProcessRefundCommand;
+import application.domain.model.aggregate.Order;
+import application.domain.ports.in.command.refund.ProcessRefundCommand;
 
 /**
- * Puerto de entrada para el caso de uso ProcessRefund.
+ * Puerto de entrada para el caso de uso de procesamiento de reembolsos y devoluciones.
  */
 public interface ProcessRefundUseCase {
+
     /**
-     * Ejecuta el caso de uso.
-     * @param command Comando con los datos requeridos
+     * Procesa el reembolso de una orden y reintegra las unidades fisicas al inventario.
+     *
+     * @param command Comando con el identificador de la orden y el motivo del reembolso.
+     * @return Agregado Order en estado REFUNDED.
      */
-    void execute(ProcessRefundCommand command);
+    Order execute(ProcessRefundCommand command);
 }

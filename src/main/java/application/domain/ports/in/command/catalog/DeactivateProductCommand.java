@@ -1,7 +1,9 @@
-package application.domain.ports.in.command;
+package application.domain.ports.in.command.catalog;
 
 /**
- * Comando para la operacion de DeactivateProduct.
+ * Comando para desactivar logicamente un producto del catalogo.
+ *
+ * @param sku Codigo SKU del producto a desactivar.
  */
-public record DeactivateProductCommand() {
+public record DeactivateProductCommand(String sku) {
 }

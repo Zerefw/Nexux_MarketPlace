@@ -1,14 +1,18 @@
-package application.domain.ports.in;
+package application.domain.ports.in.order;
 
-import application.domain.ports.in.command.CancelOrderCommand;
+import application.domain.model.aggregate.Order;
+import application.domain.ports.in.command.order.CancelOrderCommand;
 
 /**
- * Puerto de entrada para el caso de uso CancelOrder.
+ * Puerto de entrada para el caso de uso de cancelacion de orden.
  */
 public interface CancelOrderUseCase {
+
     /**
-     * Ejecuta el caso de uso.
-     * @param command Comando con los datos requeridos
+     * Cancela una orden no despachada y libera cualquier reserva de inventario asociada.
+     *
+     * @param command Comando con el identificador de la orden y el motivo de cancelacion.
+     * @return Agregado Order en estado CANCELLED.
      */
-    void execute(CancelOrderCommand command);
+    Order execute(CancelOrderCommand command);
 }

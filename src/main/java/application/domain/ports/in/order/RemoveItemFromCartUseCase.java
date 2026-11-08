@@ -1,14 +1,18 @@
-package application.domain.ports.in;
+package application.domain.ports.in.order;
 
-import application.domain.ports.in.command.RemoveItemFromCartCommand;
+import application.domain.model.aggregate.Order;
+import application.domain.ports.in.command.order.RemoveItemFromCartCommand;
 
 /**
- * Puerto de entrada para el caso de uso RemoveItemFromCart.
+ * Puerto de entrada para el caso de uso de eliminacion de items del carrito.
  */
 public interface RemoveItemFromCartUseCase {
+
     /**
-     * Ejecuta el caso de uso.
-     * @param command Comando con los datos requeridos
+     * Remueve un producto del carrito de compras y recalcula el total.
+     *
+     * @param command Comando con el identificador de la orden y el SKU a eliminar.
+     * @return Agregado Order actualizado.
      */
-    void execute(RemoveItemFromCartCommand command);
+    Order execute(RemoveItemFromCartCommand command);
 }

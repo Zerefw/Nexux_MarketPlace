@@ -1,7 +1,9 @@
-package application.domain.ports.in.command;
+package application.domain.ports.in.command.inventory;
 
 /**
- * Comando para la operacion de GetAvailableStock.
+ * Comando para consultar el stock disponible consolidado de un SKU.
+ *
+ * @param sku Codigo SKU del producto a consultar.
  */
-public record GetAvailableStockCommand() {
+public record GetAvailableStockCommand(String sku) {
 }

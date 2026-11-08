@@ -1,14 +1,18 @@
-package application.domain.ports.in;
+package application.domain.ports.in.order;
 
-import application.domain.ports.in.command.MarkOrderAsPaidCommand;
+import application.domain.model.aggregate.Order;
+import application.domain.ports.in.command.order.MarkOrderAsPaidCommand;
 
 /**
- * Puerto de entrada para el caso de uso MarkOrderAsPaid.
+ * Puerto de entrada para el caso de uso de confirmacion de pago de una orden.
  */
 public interface MarkOrderAsPaidUseCase {
+
     /**
-     * Ejecuta el caso de uso.
-     * @param command Comando con los datos requeridos
+     * Marca una orden como pagada y deduce en firme el inventario previamente reservado.
+     *
+     * @param command Comando con el identificador de la orden y la referencia de pago.
+     * @return Agregado Order en estado PAID.
      */
-    void execute(MarkOrderAsPaidCommand command);
+    Order execute(MarkOrderAsPaidCommand command);
 }

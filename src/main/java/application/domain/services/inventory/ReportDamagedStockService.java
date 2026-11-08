@@ -1,30 +1,42 @@
-package application.domain.services;
+package application.domain.services.inventory;
 
+import application.domain.exception.DomainException;
+import application.domain.model.entity.InventoryItem;
+import application.domain.model.valueobject.Sku;
+import application.domain.ports.in.command.inventory.ReportDamagedStockCommand;
+import application.domain.ports.in.inventory.ReportDamagedStockUseCase;
+import application.domain.ports.out.inventory.InventoryRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import application.domain.ports.in.ReportDamagedStockUseCase;
-import application.domain.ports.in.command.ReportDamagedStockCommand;
-import application.domain.ports.out.InventoryRepositoryPort;
 
 /**
- * Servicio de aplicacion para reportar mermas o inventario daÃ±ado.
+ * Servicio de aplicacion para reportar mermas o inventario danado dentro de una bodega.
  * Implementa el caso de uso ReportDamagedStockUseCase.
  */
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class ReportDamagedStockService implements ReportDamagedStockUseCase {
 
     private final InventoryRepositoryPort inventoryRepositoryPort;
 
     /**
-     * Ejecuta la logica de negocio principal para el caso de uso.
-     * 
-     * @param command Comando que contiene los parametros de entrada necesarios.
+     * Registra unidades danadas en el inventario de una bodega especifica para un SKU,
+     * reduciendo automaticamente su disponibilidad comercial.
+     *
+     * @param command Comando con los datos de bodega, SKU y cantidad danada.
+     * @return Entidad InventoryItem actualizada y persistida.
      */
     @Override
-    public void execute(ReportDamagedStockCommand command) {
-        // TODO: Implementar la logica de dominio delegando en entidades y servicios inyectados.
+    @Transactional
+    public InventoryItem execute(ReportDamagedStockCommand command) {
+        Sku sku = new Sku(command.sku());
+        InventoryItem item = inventoryRepositoryPort.findByWarehouseIdAndSku(command.warehouseId(), sku)
+                .orElseThrow(() -> new DomainException(
+                        "No se encontro inventario para el SKU " + command.sku() + " en la bodega " + command.warehouseId()
+                ));
+
+        item.reportDamaged(command.damagedQuantity());
+        return inventoryRepositoryPort.save(item);
     }
 }

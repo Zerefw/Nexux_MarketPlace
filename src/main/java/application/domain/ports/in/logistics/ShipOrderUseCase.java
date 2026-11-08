@@ -1,14 +1,18 @@
-package application.domain.ports.in;
+package application.domain.ports.in.logistics;
 
-import application.domain.ports.in.command.ShipOrderCommand;
+import application.domain.model.aggregate.Order;
+import application.domain.ports.in.command.logistics.ShipOrderCommand;
 
 /**
- * Puerto de entrada para el caso de uso ShipOrder.
+ * Puerto de entrada para el caso de uso de despacho fisico de una orden.
  */
 public interface ShipOrderUseCase {
+
     /**
-     * Ejecuta el caso de uso.
-     * @param command Comando con los datos requeridos
+     * Marca una orden pagada como despachada fisicamente.
+     *
+     * @param command Comando con el identificador de la orden y los datos de guia.
+     * @return Agregado Order en estado SHIPPED.
      */
-    void execute(ShipOrderCommand command);
+    Order execute(ShipOrderCommand command);
 }

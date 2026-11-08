@@ -1,14 +1,18 @@
-package application.domain.ports.in;
+package application.domain.ports.in.inventory;
 
-import application.domain.ports.in.command.ReportDamagedStockCommand;
+import application.domain.model.entity.InventoryItem;
+import application.domain.ports.in.command.inventory.ReportDamagedStockCommand;
 
 /**
- * Puerto de entrada para el caso de uso ReportDamagedStock.
+ * Puerto de entrada para el caso de uso de reporte de mermas o stock danado.
  */
 public interface ReportDamagedStockUseCase {
+
     /**
-     * Ejecuta el caso de uso.
-     * @param command Comando con los datos requeridos
+     * Registra unidades danadas descontandolas de la disponibilidad para venta.
+     *
+     * @param command Comando con la bodega, el SKU y la cantidad danada.
+     * @return Entidad InventoryItem actualizada.
      */
-    void execute(ReportDamagedStockCommand command);
+    InventoryItem execute(ReportDamagedStockCommand command);
 }

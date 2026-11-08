@@ -1,14 +1,16 @@
-package application.domain.ports.in;
+package application.domain.ports.in.user;
 
-import application.domain.ports.in.command.SuspendUserCommand;
+import application.domain.ports.in.command.user.SuspendUserCommand;
 
 /**
- * Puerto de entrada para el caso de uso SuspendUser.
+ * Puerto de entrada para el caso de uso de suspension de usuario.
  */
 public interface SuspendUserUseCase {
+
     /**
-     * Ejecuta el caso de uso.
-     * @param command Comando con los datos requeridos
+     * Suspende preventivamente la cuenta de un usuario.
+     *
+     * @param command Comando con el identificador del usuario.
      */
-    void execute(SuspendUserCommand command);
+    void suspendUser(SuspendUserCommand command);
 }

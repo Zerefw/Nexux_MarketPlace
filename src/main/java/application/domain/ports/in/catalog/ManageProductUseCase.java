@@ -1,17 +1,25 @@
-// Paquete de puertos de entrada
-package application.domain.ports.in;
+package application.domain.ports.in.catalog;
 
-// Importa la entidad de Dominio Product
 import application.domain.model.entity.Product;
-// Importa el comando de creaciÃ³n
-import application.domain.ports.in.command.CreateProductCommand;
+import application.domain.ports.in.command.catalog.CreateProductCommand;
 
-// Interfaz que define los casos de uso para administrar el catÃ¡logo
+/**
+ * Puerto de entrada general para administrar operaciones del catalogo de productos.
+ */
 public interface ManageProductUseCase {
-    
-    // Firma del mÃ©todo para registrar un nuevo producto en el catÃ¡logo
+
+    /**
+     * Registra un nuevo producto en el catalogo.
+     *
+     * @param command Comando con los datos de creacion.
+     * @return Producto creado y persistido.
+     */
     Product createProduct(CreateProductCommand command);
-    
-    // Firma del mÃ©todo para desactivar (borrado lÃ³gico) un producto por su ID
+
+    /**
+     * Desactiva logicamente un producto por su identificador unico.
+     *
+     * @param productId Identificador del producto.
+     */
     void deactivateProduct(String productId);
 }

@@ -1,14 +1,18 @@
-package application.domain.services;
+package application.domain.services.catalog;
 
-import application.domain.ports.in.AddProductVariantUseCase;
-import application.domain.ports.in.command.AddProductVariantCommand;
-import application.domain.ports.out.ProductRepositoryPort;
+import application.domain.exception.DomainException;
+import application.domain.model.entity.Product;
+import application.domain.model.valueobject.Sku;
+import application.domain.ports.in.catalog.AddProductVariantUseCase;
+import application.domain.ports.in.command.catalog.AddProductVariantCommand;
+import application.domain.ports.out.catalog.ProductRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Servicio de aplicacion para aÃ±adir nuevas variantes a un producto existente.
+ * Servicio de aplicacion para anadir nuevas variantes comerciales a un producto existente.
+ * Implementa el caso de uso AddProductVariantUseCase.
  */
 @Service
 @RequiredArgsConstructor
@@ -17,16 +21,18 @@ public class AddProductVariantService implements AddProductVariantUseCase {
     private final ProductRepositoryPort productRepositoryPort;
 
     /**
-     * AÃ±ade una variante a un producto.
-     * @param command Comando con los datos de la variante.
+     * Agrega una variante a un producto del catalogo y persiste los cambios.
+     *
+     * @param command Comando con el SKU del producto y la variante a registrar.
+     * @return Entidad Product actualizada.
      */
     @Override
     @Transactional
-    public void addProductVariant(AddProductVariantCommand command) {
-        var sku = new application.domain.model.valueobject.Sku(command.sku());
-        var product = productRepositoryPort.findBySku(sku)
-                .orElseThrow(() -> new application.domain.exception.DomainException("Producto no encontrado"));
+    public Product addProductVariant(AddProductVariantCommand command) {
+        Sku sku = new Sku(command.sku());
+        Product product = productRepositoryPort.findBySku(sku)
+                .orElseThrow(() -> new DomainException("Producto no encontrado con SKU: " + command.sku()));
         product.addVariant(command.variant());
-        productRepositoryPort.save(product);
+        return productRepositoryPort.save(product);
     }
 }

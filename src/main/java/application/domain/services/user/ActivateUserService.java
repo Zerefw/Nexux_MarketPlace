@@ -1,14 +1,17 @@
-package application.domain.services;
+package application.domain.services.user;
 
-import application.domain.ports.in.ActivateUserUseCase;
-import application.domain.ports.in.command.ActivateUserCommand;
-import application.domain.ports.out.UserRepositoryPort;
+import application.domain.exception.DomainException;
+import application.domain.model.entity.User;
+import application.domain.ports.in.command.user.ActivateUserCommand;
+import application.domain.ports.in.user.ActivateUserUseCase;
+import application.domain.ports.out.user.UserRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Servicio de aplicacion para reactivar a un usuario previamente suspendido.
+ * Implementa el puerto de entrada ActivateUserUseCase.
  */
 @Service
 @RequiredArgsConstructor
@@ -17,14 +20,15 @@ public class ActivateUserService implements ActivateUserUseCase {
     private final UserRepositoryPort userRepositoryPort;
 
     /**
-     * Reactiva un usuario en el sistema.
+     * Reactiva la cuenta de un usuario en el sistema.
+     *
      * @param command Comando con el identificador del usuario a reactivar.
      */
     @Override
     @Transactional
     public void activateUser(ActivateUserCommand command) {
-        var user = userRepositoryPort.findById(command.userId())
-                .orElseThrow(() -> new application.domain.exception.DomainException("Usuario no encontrado"));
+        User user = userRepositoryPort.findById(command.userId())
+                .orElseThrow(() -> new DomainException("Usuario no encontrado con ID: " + command.userId()));
         user.activate();
         userRepositoryPort.save(user);
     }

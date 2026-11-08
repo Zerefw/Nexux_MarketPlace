@@ -1,14 +1,17 @@
-package application.domain.services;
+package application.domain.services.user;
 
-import application.domain.ports.in.UpdateSellerTaxIdUseCase;
-import application.domain.ports.in.command.UpdateSellerTaxIdCommand;
-import application.domain.ports.out.SellerProfileRepositoryPort;
+import application.domain.exception.DomainException;
+import application.domain.model.entity.SellerProfile;
+import application.domain.ports.in.command.user.UpdateSellerTaxIdCommand;
+import application.domain.ports.in.user.UpdateSellerTaxIdUseCase;
+import application.domain.ports.out.user.SellerProfileRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Servicio de aplicacion para actualizar la informacion fiscal de un vendedor.
+ * Implementa el puerto de entrada UpdateSellerTaxIdUseCase.
  */
 @Service
 @RequiredArgsConstructor
@@ -17,14 +20,15 @@ public class UpdateSellerTaxIdService implements UpdateSellerTaxIdUseCase {
     private final SellerProfileRepositoryPort sellerProfileRepositoryPort;
 
     /**
-     * Actualiza el identificador fiscal de un vendedor.
-     * @param command Comando con los datos fiscales nuevos.
+     * Actualiza el identificador fiscal en el perfil del vendedor.
+     *
+     * @param command Comando con el identificador del vendedor y el nuevo identificador fiscal.
      */
     @Override
     @Transactional
     public void updateSellerTaxId(UpdateSellerTaxIdCommand command) {
-        var profile = sellerProfileRepositoryPort.findById(command.sellerId())
-                .orElseThrow(() -> new application.domain.exception.DomainException("Perfil de vendedor no encontrado"));
+        SellerProfile profile = sellerProfileRepositoryPort.findBySellerId(command.sellerId())
+                .orElseThrow(() -> new DomainException("Perfil de vendedor no encontrado para el usuario: " + command.sellerId()));
         profile.updateTaxId(command.taxId());
         sellerProfileRepositoryPort.save(profile);
     }

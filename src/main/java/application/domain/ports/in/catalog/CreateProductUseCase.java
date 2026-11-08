@@ -1,14 +1,18 @@
-package application.domain.ports.in;
+package application.domain.ports.in.catalog;
 
-import application.domain.ports.in.command.CreateProductCommand;
+import application.domain.model.entity.Product;
+import application.domain.ports.in.command.catalog.CreateProductCommand;
 
 /**
- * Puerto de entrada para el caso de uso CreateProduct.
+ * Puerto de entrada para el caso de uso de creacion de producto.
  */
 public interface CreateProductUseCase {
+
     /**
-     * Ejecuta el caso de uso.
-     * @param command Comando con los datos requeridos
+     * Crea un producto nuevo en el catalogo.
+     *
+     * @param command Comando con los datos del producto.
+     * @return Entidad Product creada.
      */
-    void execute(CreateProductCommand command);
+    Product createProduct(CreateProductCommand command);
 }

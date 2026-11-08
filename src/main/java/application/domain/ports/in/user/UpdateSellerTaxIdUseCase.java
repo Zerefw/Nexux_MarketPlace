@@ -1,14 +1,16 @@
-package application.domain.ports.in;
+package application.domain.ports.in.user;
 
-import application.domain.ports.in.command.UpdateSellerTaxIdCommand;
+import application.domain.ports.in.command.user.UpdateSellerTaxIdCommand;
 
 /**
- * Puerto de entrada para el caso de uso UpdateSellerTaxId.
+ * Puerto de entrada para actualizar el identificador tributario de un vendedor.
  */
 public interface UpdateSellerTaxIdUseCase {
+
     /**
-     * Ejecuta el caso de uso.
-     * @param command Comando con los datos requeridos
+     * Actualiza el identificador fiscal en el perfil del vendedor.
+     *
+     * @param command Comando con el identificador del vendedor y el nuevo identificador fiscal.
      */
-    void execute(UpdateSellerTaxIdCommand command);
+    void updateSellerTaxId(UpdateSellerTaxIdCommand command);
 }

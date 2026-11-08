@@ -1,14 +1,16 @@
-package application.domain.ports.in;
+package application.domain.ports.in.user;
 
-import application.domain.ports.in.command.AddSecondaryAddressCommand;
+import application.domain.ports.in.command.user.AddSecondaryAddressCommand;
 
 /**
- * Puerto de entrada para el caso de uso AddSecondaryAddress.
+ * Puerto de entrada para agregar una direccion secundaria al perfil de un comprador.
  */
 public interface AddSecondaryAddressUseCase {
+
     /**
-     * Ejecuta el caso de uso.
-     * @param command Comando con los datos requeridos
+     * Agrega una nueva direccion secundaria al comprador.
+     *
+     * @param command Comando con el identificador del comprador y la direccion.
      */
-    void execute(AddSecondaryAddressCommand command);
+    void addSecondaryAddress(AddSecondaryAddressCommand command);
 }

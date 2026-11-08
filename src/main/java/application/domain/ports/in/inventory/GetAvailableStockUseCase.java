@@ -1,14 +1,17 @@
-package application.domain.ports.in;
+package application.domain.ports.in.inventory;
 
-import application.domain.ports.in.command.GetAvailableStockCommand;
+import application.domain.ports.in.command.inventory.GetAvailableStockCommand;
 
 /**
- * Puerto de entrada para el caso de uso GetAvailableStock.
+ * Puerto de entrada para el caso de uso de consulta consolidada de stock disponible.
  */
 public interface GetAvailableStockUseCase {
+
     /**
-     * Ejecuta el caso de uso.
-     * @param command Comando con los datos requeridos
+     * Calcula y retorna la cantidad total disponible para la venta de un SKU en todas las bodegas.
+     *
+     * @param command Comando con el SKU a consultar.
+     * @return Cantidad total de unidades disponibles.
      */
-    void execute(GetAvailableStockCommand command);
+    int execute(GetAvailableStockCommand command);
 }

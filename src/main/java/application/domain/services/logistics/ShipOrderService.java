@@ -1,11 +1,13 @@
-package application.domain.services;
+package application.domain.services.logistics;
 
+import application.domain.exception.DomainException;
+import application.domain.model.aggregate.Order;
+import application.domain.ports.in.command.logistics.ShipOrderCommand;
+import application.domain.ports.in.logistics.ShipOrderUseCase;
+import application.domain.ports.out.order.OrderRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import application.domain.ports.in.ShipOrderUseCase;
-import application.domain.ports.in.command.ShipOrderCommand;
-import application.domain.ports.out.OrderRepositoryPort;
 
 /**
  * Servicio de aplicacion para despachar una orden fisicamente.
@@ -13,18 +15,27 @@ import application.domain.ports.out.OrderRepositoryPort;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class ShipOrderService implements ShipOrderUseCase {
 
     private final OrderRepositoryPort orderRepositoryPort;
 
     /**
-     * Ejecuta la logica de negocio principal para el caso de uso.
-     * 
-     * @param command Comando que contiene los parametros de entrada necesarios.
+     * Valida la informacion de guia de transporte y transiciona la orden al estado SHIPPED.
+     *
+     * @param command Comando con el identificador de la orden, numero de guia y transportadora.
+     * @return Agregado Order actualizado en estado SHIPPED.
      */
     @Override
-    public void execute(ShipOrderCommand command) {
-        // TODO: Implementar la logica de dominio delegando en entidades y servicios inyectados.
+    @Transactional
+    public Order execute(ShipOrderCommand command) {
+        if (command.trackingNumber() == null || command.trackingNumber().isBlank()) {
+            throw new DomainException("El numero de guia es obligatorio para despachar la orden");
+        }
+
+        Order order = orderRepositoryPort.findById(command.orderId())
+                .orElseThrow(() -> new DomainException("Orden no encontrada con ID: " + command.orderId()));
+
+        order.ship();
+        return orderRepositoryPort.save(order);
     }
 }

@@ -1,14 +1,18 @@
-package application.domain.ports.in;
+package application.domain.ports.in.catalog;
 
-import application.domain.ports.in.command.FindProductBySkuCommand;
+import application.domain.model.entity.Product;
+import application.domain.ports.in.command.catalog.FindProductBySkuCommand;
 
 /**
- * Puerto de entrada para el caso de uso FindProductBySku.
+ * Puerto de entrada para el caso de uso de busqueda de producto por SKU.
  */
 public interface FindProductBySkuUseCase {
+
     /**
-     * Ejecuta el caso de uso.
-     * @param command Comando con los datos requeridos
+     * Consulta un producto por su codigo SKU.
+     *
+     * @param command Comando con el SKU a buscar.
+     * @return Entidad Product encontrada.
      */
-    void execute(FindProductBySkuCommand command);
+    Product findProductBySku(FindProductBySkuCommand command);
 }

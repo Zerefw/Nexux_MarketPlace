@@ -1,7 +1,7 @@
-package application.domain.ports.in.command;
+package application.domain.ports.in.command.catalog;
 
 /**
- * Comando para la operacion de ListActiveProducts.
+ * Comando para solicitar el listado de productos activos en el catalogo.
  */
 public record ListActiveProductsCommand() {
 }

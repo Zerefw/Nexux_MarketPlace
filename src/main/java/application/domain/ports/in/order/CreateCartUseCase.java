@@ -1,14 +1,18 @@
-package application.domain.ports.in;
+package application.domain.ports.in.order;
 
-import application.domain.ports.in.command.CreateCartCommand;
+import application.domain.model.aggregate.Order;
+import application.domain.ports.in.command.order.CreateCartCommand;
 
 /**
- * Puerto de entrada para el caso de uso CreateCart.
+ * Puerto de entrada para el caso de uso de creacion de carrito de compras.
  */
 public interface CreateCartUseCase {
+
     /**
-     * Ejecuta el caso de uso.
-     * @param command Comando con los datos requeridos
+     * Crea una nueva orden en estado CART para un comprador.
+     *
+     * @param command Comando con el comprador y la moneda.
+     * @return Agregado Order inicializado en estado CART.
      */
-    void execute(CreateCartCommand command);
+    Order execute(CreateCartCommand command);
 }

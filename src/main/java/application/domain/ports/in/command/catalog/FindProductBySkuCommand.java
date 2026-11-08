@@ -1,7 +1,9 @@
-package application.domain.ports.in.command;
+package application.domain.ports.in.command.catalog;
 
 /**
- * Comando para la operacion de FindProductBySku.
+ * Comando para consultar un producto especifico mediante su SKU.
+ *
+ * @param sku Codigo SKU a consultar.
  */
-public record FindProductBySkuCommand() {
+public record FindProductBySkuCommand(String sku) {
 }

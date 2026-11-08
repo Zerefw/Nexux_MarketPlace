@@ -1,14 +1,16 @@
-package application.domain.ports.in;
+package application.domain.ports.in.user;
 
-import application.domain.ports.in.command.ActivateUserCommand;
+import application.domain.ports.in.command.user.ActivateUserCommand;
 
 /**
- * Puerto de entrada para el caso de uso ActivateUser.
+ * Puerto de entrada para el caso de uso de reactivacion de usuario.
  */
 public interface ActivateUserUseCase {
+
     /**
-     * Ejecuta el caso de uso.
-     * @param command Comando con los datos requeridos
+     * Reactiva la cuenta de un usuario previamente suspendido.
+     *
+     * @param command Comando con el identificador del usuario.
      */
-    void execute(ActivateUserCommand command);
+    void activateUser(ActivateUserCommand command);
 }

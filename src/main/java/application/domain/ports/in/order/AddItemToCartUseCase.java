@@ -1,14 +1,18 @@
-package application.domain.ports.in;
+package application.domain.ports.in.order;
 
-import application.domain.ports.in.command.AddItemToCartCommand;
+import application.domain.model.aggregate.Order;
+import application.domain.ports.in.command.order.AddItemToCartCommand;
 
 /**
- * Puerto de entrada para el caso de uso AddItemToCart.
+ * Puerto de entrada para el caso de uso de adicion de items al carrito.
  */
 public interface AddItemToCartUseCase {
+
     /**
-     * Ejecuta el caso de uso.
-     * @param command Comando con los datos requeridos
+     * Agrega un item al carrito de compras y recalcula el total de la orden.
+     *
+     * @param command Comando con los datos del item a agregar.
+     * @return Agregado Order actualizado.
      */
-    void execute(AddItemToCartCommand command);
+    Order execute(AddItemToCartCommand command);
 }

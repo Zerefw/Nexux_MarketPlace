@@ -1,14 +1,18 @@
-package application.domain.ports.in;
+package application.domain.ports.in.user;
 
-import application.domain.ports.in.command.RegisterBuyerCommand;
+import application.domain.model.entity.User;
+import application.domain.ports.in.command.user.RegisterBuyerCommand;
 
 /**
- * Puerto de entrada para el caso de uso RegisterBuyer.
+ * Puerto de entrada especifico para el caso de uso de registro de comprador.
  */
 public interface RegisterBuyerUseCase {
+
     /**
-     * Ejecuta el caso de uso.
-     * @param command Comando con los datos requeridos
+     * Ejecuta el registro de un nuevo comprador.
+     *
+     * @param command Comando con los datos requeridos del comprador.
+     * @return Entidad User creada.
      */
-    void execute(RegisterBuyerCommand command);
+    User registerBuyer(RegisterBuyerCommand command);
 }

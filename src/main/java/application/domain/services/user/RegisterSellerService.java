@@ -1,10 +1,15 @@
-package application.domain.services;
+package application.domain.services.user;
 
-import application.domain.ports.in.RegisterSellerUseCase;
-import application.domain.ports.in.command.RegisterSellerCommand;
-import application.domain.ports.out.UserRepositoryPort;
-import application.domain.ports.out.SellerProfileRepositoryPort;
-import application.domain.ports.out.PasswordEncoderPort;
+import application.domain.exception.DomainException;
+import application.domain.model.entity.SellerProfile;
+import application.domain.model.entity.User;
+import application.domain.model.valueobject.Email;
+import application.domain.model.valueobject.UserRole;
+import application.domain.ports.in.command.user.RegisterSellerCommand;
+import application.domain.ports.in.user.RegisterSellerUseCase;
+import application.domain.ports.out.user.PasswordEncoderPort;
+import application.domain.ports.out.user.SellerProfileRepositoryPort;
+import application.domain.ports.out.user.UserRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,30 +27,42 @@ public class RegisterSellerService implements RegisterSellerUseCase {
     private final PasswordEncoderPort passwordEncoderPort;
 
     /**
-     * Registra un vendedor de manera transaccional.
+     * Registra un vendedor de manera transaccional validando unicidad de correo y documento.
+     *
      * @param command Comando que contiene los datos del vendedor a registrar.
+     * @return Entidad User creada y persistida.
      */
     @Override
     @Transactional
-    public void registerSeller(RegisterSellerCommand command) {
-        if (command.getEmail() == null || command.getRawPassword() == null) {
-            throw new application.domain.exception.DomainException("Email y password son requeridos");
+    public User registerSeller(RegisterSellerCommand command) {
+        if (command.getEmail() == null || command.getRawPassword() == null || command.getRawPassword().isBlank()) {
+            throw new DomainException("El correo electronico y la contrasena son requeridos");
         }
-        var encodedPassword = passwordEncoderPort.encode(command.getRawPassword());
-        var user = application.domain.model.entity.User.create(
+        Email email = new Email(command.getEmail());
+        if (userRepositoryPort.existsByEmail(email)) {
+            throw new DomainException("El correo electronico ya esta registrado");
+        }
+        if (userRepositoryPort.existsByIdentificationDocument(command.getIdentificationDocument())) {
+            throw new DomainException("El documento de identificacion ya esta registrado");
+        }
+
+        String encodedPassword = passwordEncoderPort.encode(command.getRawPassword());
+        User user = User.create(
                 command.getIdentificationDocument(),
                 command.getFullName(),
-                new application.domain.model.valueobject.Email(command.getEmail()),
-                application.domain.model.valueobject.UserRole.SELLER
+                email,
+                UserRole.SELLER
         );
-        user = userRepositoryPort.save(user, encodedPassword);
-        
-        var profile = application.domain.model.entity.SellerProfile.create(
-                user.getId(),
+        User savedUser = userRepositoryPort.save(user, encodedPassword);
+
+        SellerProfile profile = SellerProfile.create(
+                savedUser.getId(),
                 command.getStoreName(),
                 command.getTaxId(),
-                new application.domain.model.valueobject.Email(command.getEmail())
+                email
         );
         sellerProfileRepositoryPort.save(profile);
+
+        return savedUser;
     }
 }

@@ -1,70 +1,65 @@
-// Paquete de mapeadores para la persistencia
 package application.adapter.out.persistence.mapper;
 
-// Entidad JPA
 import application.adapter.out.persistence.entity.ProductJpaEntity;
-// Entidad Dominio
 import application.domain.model.entity.Product;
-// Value Objects
 import application.domain.model.valueobject.Money;
 import application.domain.model.valueobject.Sku;
 
-// Clase utilitaria sin estado
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * Mapeador bidireccional entre la entidad de dominio Product y la entidad JPA ProductJpaEntity.
+ */
 public class ProductMapper {
 
-    // Método estático para convertir de Dominio a JPA
+    /**
+     * Convierte una entidad de dominio Product en su representacion JPA.
+     *
+     * @param domain Entidad de dominio Product.
+     * @return Entidad ProductJpaEntity lista para persistir.
+     */
     public static ProductJpaEntity toJpaEntity(Product domain) {
-        // Inicializa el builder de la entidad JPA
         return ProductJpaEntity.builder()
-                // Copia el ID interno
                 .id(domain.getId())
-                // Extrae el código String desde el Value Object Sku
                 .sku(domain.getSku().getCode())
-                // Extrae el ID del vendedor
                 .sellerId(domain.getSellerId())
-                // Extrae el nombre
                 .name(domain.getName())
-                // Extrae la descripción
                 .description(domain.getDescription())
-                // Desglosa el Value Object Money extrayendo el monto numérico
                 .priceAmount(domain.getPrice().getAmount())
-                // Desglosa el Value Object Money extrayendo la moneda (ej. USD)
                 .priceCurrency(domain.getPrice().getCurrency())
-                // Extrae el Enum de tipo de producto
                 .type(domain.getType())
-                // Junta la lista de strings (variantes) en un solo texto separado por punto y coma (;)
                 .variants(domain.getVariants() != null ? String.join(";", domain.getVariants()) : "")
-                // Extrae el booleano de activación
                 .active(domain.isActive())
-                // Construye el objeto final
                 .build();
     }
 
-    // Método estático para convertir de JPA a Dominio (Rehidratar)
+    /**
+     * Reconstruye la entidad de dominio Product preservando su ID, descripcion, variantes y estado activo.
+     *
+     * @param jpaEntity Entidad recuperada desde la base de datos.
+     * @return Entidad de dominio Product completamente hidratada.
+     */
     public static Product toDomainEntity(ProductJpaEntity jpaEntity) {
-        // Reconstruye el Sku VO
         Sku sku = new Sku(jpaEntity.getSku());
-        // Reconstruye el Money VO
         Money price = new Money(jpaEntity.getPriceAmount(), jpaEntity.getPriceCurrency());
-        
-        // Reconstruye la entidad de dominio usando su Factory Method original
-        Product product = Product.create(
-                sku,
-                jpaEntity.getSellerId(),
-                jpaEntity.getName(),
-                price,
-                jpaEntity.getType()
-        );
-        
-        // Separa el string almacenado de la DB por punto y coma (;)
-        if (jpaEntity.getVariants() != null && !jpaEntity.getVariants().isEmpty()) {
-            for (String variant : jpaEntity.getVariants().split(";")) {
-                // Agrega cada variante reconstruida a la Entidad pura
-                product.addVariant(variant);
-            }
+
+        List<String> variants = new ArrayList<>();
+        if (jpaEntity.getVariants() != null && !jpaEntity.getVariants().isBlank()) {
+            variants.addAll(Arrays.asList(jpaEntity.getVariants().split(";")));
         }
-        
-        // Devuelve el objeto completamente rehidratado para uso del Use Case
-        return product;
+
+        return Product.builder()
+                .id(jpaEntity.getId())
+                .sku(sku)
+                .sellerId(jpaEntity.getSellerId())
+                .name(jpaEntity.getName())
+                .description(jpaEntity.getDescription())
+                .price(price)
+                .type(jpaEntity.getType())
+                .variants(variants)
+                .active(jpaEntity.isActive())
+                .build();
     }
 }

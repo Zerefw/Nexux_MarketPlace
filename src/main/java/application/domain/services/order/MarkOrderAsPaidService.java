@@ -38,6 +38,9 @@ public class MarkOrderAsPaidService implements MarkOrderAsPaidUseCase {
     @Override
     @Transactional
     public Order execute(MarkOrderAsPaidCommand command) {
+        if (command.orderId() == null || command.orderId().isBlank()) {
+            throw new DomainException("El identificador de la orden es obligatorio");
+        }
         if (command.paymentReference() == null || command.paymentReference().isBlank()) {
             throw new DomainException("La referencia de pago es obligatoria para confirmar el pago");
         }

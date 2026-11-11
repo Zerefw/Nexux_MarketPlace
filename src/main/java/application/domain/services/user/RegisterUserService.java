@@ -39,6 +39,9 @@ public class RegisterUserService implements RegisterUserUseCase {
     @Override
     @Transactional
     public User registerBuyer(RegisterBuyerCommand command) {
+        if (command.getRawPassword() == null || command.getRawPassword().isBlank()) {
+            throw new DomainException("La contrasena es requerida");
+        }
         Email emailVO = new Email(command.getEmail());
         validateUserUniqueness(emailVO, command.getIdentificationDocument());
 
@@ -67,6 +70,12 @@ public class RegisterUserService implements RegisterUserUseCase {
     @Override
     @Transactional
     public User registerSeller(RegisterSellerCommand command) {
+        if (command.getRawPassword() == null || command.getRawPassword().isBlank()) {
+            throw new DomainException("La contrasena es requerida");
+        }
+        if (command.getTaxId() == null || command.getTaxId().isBlank()) {
+            throw new DomainException("El identificador fiscal (taxId) es requerido para vendedores");
+        }
         Email emailVO = new Email(command.getEmail());
         validateUserUniqueness(emailVO, command.getIdentificationDocument());
 

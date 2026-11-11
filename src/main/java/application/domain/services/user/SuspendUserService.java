@@ -20,13 +20,16 @@ public class SuspendUserService implements SuspendUserUseCase {
     private final UserRepositoryPort userRepositoryPort;
 
     /**
-     * Suspende la cuenta de un usuario en el sistema.
+     * Suspende la cuenta de un usuario en el sistema validando su identificador.
      *
      * @param command Comando con el identificador del usuario a suspender.
      */
     @Override
     @Transactional
     public void suspendUser(SuspendUserCommand command) {
+        if (command.userId() == null || command.userId().isBlank()) {
+            throw new DomainException("El identificador del usuario es obligatorio");
+        }
         User user = userRepositoryPort.findById(command.userId())
                 .orElseThrow(() -> new DomainException("Usuario no encontrado con ID: " + command.userId()));
         user.suspend();

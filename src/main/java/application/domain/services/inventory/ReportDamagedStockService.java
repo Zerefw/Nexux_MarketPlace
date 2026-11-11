@@ -21,8 +21,7 @@ public class ReportDamagedStockService implements ReportDamagedStockUseCase {
     private final InventoryRepositoryPort inventoryRepositoryPort;
 
     /**
-     * Registra unidades danadas en el inventario de una bodega especifica para un SKU,
-     * reduciendo automaticamente su disponibilidad comercial.
+     * Registra unidades danadas en el inventario de una bodega especifica para un SKU.
      *
      * @param command Comando con los datos de bodega, SKU y cantidad danada.
      * @return Entidad InventoryItem actualizada y persistida.
@@ -30,6 +29,9 @@ public class ReportDamagedStockService implements ReportDamagedStockUseCase {
     @Override
     @Transactional
     public InventoryItem execute(ReportDamagedStockCommand command) {
+        if (command.warehouseId() == null || command.warehouseId().isBlank()) {
+            throw new DomainException("El identificador de la bodega es obligatorio");
+        }
         Sku sku = new Sku(command.sku());
         InventoryItem item = inventoryRepositoryPort.findByWarehouseIdAndSku(command.warehouseId(), sku)
                 .orElseThrow(() -> new DomainException(

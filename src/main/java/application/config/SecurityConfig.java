@@ -1,51 +1,75 @@
-// Paquete de configuración del proyecto
 package application.config;
 
-// Importa anotación para exponer Beans de Spring
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-// Importa anotación para marcar como clase de configuración
 import org.springframework.context.annotation.Configuration;
-// Importa configuración HTTP de Spring Security
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-// Habilita las protecciones de seguridad web globales
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-// Proveedor concreto del algoritmo BCrypt para contraseñas seguras
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-// Interfaz base de encriptación de Spring Security
-import org.springframework.security.crypto.password.PasswordEncoder;
-// Representa la cadena de filtros de seguridad aplicada a la app
-import org.springframework.security.web.SecurityFilterChain;
-// Enumerador para políticas de creación de sesiones (ej. STATELESS)
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-// Indica que es un componente de Spring que genera Beans
+/**
+ * Configuracion central de Spring Security con soporte para autenticacion JWT sin estado
+ * y control de acceso basado en roles (BUYER, SELLER, LOGISTICS_OPERATOR, ADMIN, SUPERVISOR).
+ */
 @Configuration
-// Aplica filtros de seguridad por defecto sobre todas las peticiones
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    // Registra este método como Bean para sobrescribir la configuración de seguridad predeterminada
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // Desactiva la protección CSRF, requerida típicamente en APIs REST y clientes móviles
         http.csrf(csrf -> csrf.disable())
-            // Define política de manejo de sesiones para evitar almacenar estado en el servidor (útil para JWT)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            // Comienza la definición de reglas de autorización para rutas HTTP
-            .authorizeHttpRequests(auth -> auth
-                // Autoriza el acceso libre (sin token) a todas las rutas que comiencen con /api/v1/auth/
-                .requestMatchers("/api/v1/auth/**").permitAll()
-                // Indica que absolutamente cualquier otra ruta debe requerir autenticación
-                .anyRequest().authenticated()
-            );
-        // Construye y retorna la cadena de filtros con nuestras personalizaciones
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("{\"success\":false,\"message\":\"No autorizado: Token JWT ausente o invalido\",\"data\":null}");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("{\"success\":false,\"message\":\"Acceso denegado: El rol del usuario no tiene permisos para esta operacion\",\"data\":null}");
+                        })
+                )
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/api/v1/auth/**",
+                                "/h2-console/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+                        // Operaciones exclusivas de Compradores (BUYER)
+                        .requestMatchers("/api/v1/users/buyers/**").hasAnyRole("BUYER", "ADMIN")
+                        .requestMatchers("/api/v1/orders/cart/**", "/api/v1/orders/checkout", "/api/v1/orders/pay").hasAnyRole("BUYER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/orders/*/items/*").hasAnyRole("BUYER", "ADMIN")
+                        // Operaciones exclusivas de Vendedores (SELLER)
+                        .requestMatchers("/api/v1/users/sellers/**").hasAnyRole("SELLER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/catalog/products/**").hasAnyRole("SELLER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/catalog/products/**").hasAnyRole("SELLER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/catalog/products/**").hasAnyRole("SELLER", "ADMIN")
+                        .requestMatchers("/api/v1/warehouses/**").hasAnyRole("SELLER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/inventory/**").hasAnyRole("SELLER", "LOGISTICS_OPERATOR", "ADMIN")
+                        // Consultas y operaciones compartidas para cualquier usuario autenticado
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
-    
-    // Declara el bean PasswordEncoder para que pueda ser inyectado (por ejemplo, en nuestro Adapter)
+
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // Retorna una instancia del algoritmo estándar de industria BCrypt, con la fuerza predeterminada
         return new BCryptPasswordEncoder();
     }
 }

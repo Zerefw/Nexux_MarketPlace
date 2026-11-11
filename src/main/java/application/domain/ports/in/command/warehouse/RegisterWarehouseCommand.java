@@ -8,7 +8,7 @@ import application.domain.model.valueobject.WarehouseType;
  * @param ownerId         Identificador del propietario (Marketplace o Vendedor).
  * @param name            Nombre descriptivo de la bodega.
  * @param locationAddress Direccion fisica de ubicacion.
- * @param type            Tipo de bodega (OWNED o SELLER_MANAGED).
+ * @param type            Tipo de bodega (MARKETPLACE o SELLER).
  */
 public record RegisterWarehouseCommand(
         String ownerId,

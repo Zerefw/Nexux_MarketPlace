@@ -38,6 +38,9 @@ public class ProcessRefundService implements ProcessRefundUseCase {
     @Override
     @Transactional
     public Order execute(ProcessRefundCommand command) {
+        if (command.orderId() == null || command.orderId().isBlank()) {
+            throw new DomainException("El identificador de la orden es obligatorio");
+        }
         if (command.reason() == null || command.reason().isBlank()) {
             throw new DomainException("El motivo del reembolso es obligatorio");
         }

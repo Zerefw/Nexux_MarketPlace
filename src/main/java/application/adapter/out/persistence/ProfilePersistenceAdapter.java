@@ -27,6 +27,8 @@ public class ProfilePersistenceAdapter implements BuyerProfileRepositoryPort, Se
     @Override
     public BuyerProfile save(BuyerProfile profile) {
         BuyerProfileJpaEntity entity = ProfileMapper.toJpaEntity(profile);
+        buyerRepo.findByUserId(profile.getUserId())
+                .ifPresent(existing -> entity.setId(existing.getId()));
         BuyerProfileJpaEntity saved = buyerRepo.save(entity);
         return ProfileMapper.toDomainEntity(saved);
     }
@@ -40,6 +42,8 @@ public class ProfilePersistenceAdapter implements BuyerProfileRepositoryPort, Se
     @Override
     public SellerProfile save(SellerProfile profile) {
         SellerProfileJpaEntity entity = ProfileMapper.toJpaEntity(profile);
+        sellerRepo.findByUserId(profile.getUserId())
+                .ifPresent(existing -> entity.setId(existing.getId()));
         SellerProfileJpaEntity saved = sellerRepo.save(entity);
         return ProfileMapper.toDomainEntity(saved);
     }

@@ -20,13 +20,19 @@ public class AddSecondaryAddressService implements AddSecondaryAddressUseCase {
     private final BuyerProfileRepositoryPort buyerProfileRepositoryPort;
 
     /**
-     * Agrega una direccion secundaria de entrega al comprador.
+     * Agrega una direccion secundaria de entrega al comprador validando que los campos sean obligatorios.
      *
      * @param command Comando con el identificador del comprador y la direccion secundaria.
      */
     @Override
     @Transactional
     public void addSecondaryAddress(AddSecondaryAddressCommand command) {
+        if (command.buyerId() == null || command.buyerId().isBlank()) {
+            throw new DomainException("El identificador del comprador es obligatorio");
+        }
+        if (command.address() == null || command.address().isBlank()) {
+            throw new DomainException("La direccion secundaria es obligatoria");
+        }
         BuyerProfile profile = buyerProfileRepositoryPort.findByBuyerId(command.buyerId())
                 .orElseThrow(() -> new DomainException("Perfil de comprador no encontrado para el usuario: " + command.buyerId()));
         profile.addSecondaryAddress(command.address());

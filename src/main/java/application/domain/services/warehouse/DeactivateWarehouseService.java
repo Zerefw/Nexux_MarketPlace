@@ -20,13 +20,16 @@ public class DeactivateWarehouseService implements DeactivateWarehouseUseCase {
     private final WarehouseRepositoryPort warehouseRepositoryPort;
 
     /**
-     * Desactiva una bodega en el sistema.
+     * Desactiva una bodega en el sistema validando su identificador.
      *
      * @param command Comando con la identificacion de la bodega.
      */
     @Override
     @Transactional
     public void execute(DeactivateWarehouseCommand command) {
+        if (command.warehouseId() == null || command.warehouseId().isBlank()) {
+            throw new DomainException("El identificador de la bodega es obligatorio");
+        }
         Warehouse warehouse = warehouseRepositoryPort.findById(command.warehouseId())
                 .orElseThrow(() -> new DomainException("Bodega no encontrada con ID: " + command.warehouseId()));
         warehouse.deactivate();

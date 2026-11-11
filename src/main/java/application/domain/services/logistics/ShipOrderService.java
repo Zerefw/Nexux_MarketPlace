@@ -28,8 +28,14 @@ public class ShipOrderService implements ShipOrderUseCase {
     @Override
     @Transactional
     public Order execute(ShipOrderCommand command) {
+        if (command.orderId() == null || command.orderId().isBlank()) {
+            throw new DomainException("El identificador de la orden es obligatorio");
+        }
         if (command.trackingNumber() == null || command.trackingNumber().isBlank()) {
             throw new DomainException("El numero de guia es obligatorio para despachar la orden");
+        }
+        if (command.carrierName() == null || command.carrierName().isBlank()) {
+            throw new DomainException("El nombre de la transportadora es obligatorio");
         }
 
         Order order = orderRepositoryPort.findById(command.orderId())

@@ -44,6 +44,14 @@ public interface UserRepositoryPort {
     Optional<User> findByEmail(Email email);
 
     /**
+     * Recupera el hash de contrasena almacenado para un correo electronico.
+     *
+     * @param email Objeto de valor Email.
+     * @return Optional con el hash de contrasena.
+     */
+    Optional<String> findEncodedPasswordByEmail(Email email);
+
+    /**
      * Verifica si ya existe un usuario registrado con el correo electronico indicado.
      *
      * @param email Objeto de valor Email.

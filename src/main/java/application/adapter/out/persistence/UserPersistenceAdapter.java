@@ -51,6 +51,12 @@ public class UserPersistenceAdapter implements UserRepositoryPort {
     }
 
     @Override
+    public Optional<String> findEncodedPasswordByEmail(Email email) {
+        return userRepository.findByEmail(email.getAddress())
+                .map(UserJpaEntity::getPassword);
+    }
+
+    @Override
     public boolean existsByEmail(Email email) {
         return userRepository.existsByEmail(email.getAddress());
     }

@@ -1,0 +1,1150 @@
+{
+  "info": {
+    "_postman_id": "34080749-38fcd463-bbb3-4139-9db7-42d468433dbd",
+    "name": "NexusMarket API",
+    "description": "Colección completa y organizada por flujos para probar todos los endpoints REST de NexusMarket.\nIncluye scripts de prueba automatizados que capturan tokens JWT e identificadores (buyerId, sellerId, warehouseId, orderId, sku) en variables de colección.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "buyerToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sellerToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "logisticsToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "buyerId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sellerId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "warehouseId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sku",
+      "value": "SKU-PS5-SLIM",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Autenticación (Auth)",
+      "description": "Endpoints públicos para el registro y login de usuarios por rol.",
+      "item": [
+        {
+          "name": "1.1 Registrar Comprador",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res && res.data && res.data.id) {",
+                  "    pm.collectionVariables.set('buyerId', res.data.id);",
+                  "    console.log('buyerId guardado: ' + res.data.id);",
+                  "}",
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identificationDocument\": \"CC-1020304050\",\n  \"fullName\": \"Carlos Andres Ramirez\",\n  \"email\": \"carlos.ramirez@gmail.com\",\n  \"rawPassword\": \"Password123!\",\n  \"primaryAddress\": \"Carrera 15 # 85-30 Apto 501, Bogota\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register/buyer",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register",
+                "buyer"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.2 Registrar Vendedor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res && res.data && res.data.id) {",
+                  "    pm.collectionVariables.set('sellerId', res.data.id);",
+                  "    console.log('sellerId guardado: ' + res.data.id);",
+                  "}",
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identificationDocument\": \"NIT-901555444-1\",\n  \"fullName\": \"Sony Colombia Oficial\",\n  \"email\": \"ventas@sonycolombia.com\",\n  \"rawPassword\": \"Password123!\",\n  \"storeName\": \"Sony Store Virtual\",\n  \"taxId\": \"REG-RUT-901555444\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register/seller",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register",
+                "seller"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.3 Login Comprador",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "    pm.collectionVariables.set('buyerToken', res.data.token);",
+                  "    console.log('buyerToken guardado');",
+                  "}",
+                  "pm.test('Login Comprador exitoso', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"carlos.ramirez@gmail.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.4 Login Vendedor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "    pm.collectionVariables.set('sellerToken', res.data.token);",
+                  "    console.log('sellerToken guardado');",
+                  "}",
+                  "pm.test('Login Vendedor exitoso', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ventas@sonycolombia.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.5 Login Administrador (Cuenta Pre-cargada)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "    pm.collectionVariables.set('adminToken', res.data.token);",
+                  "    console.log('adminToken guardado');",
+                  "}",
+                  "pm.test('Login Admin exitoso', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@nexus.com\",\n  \"password\": \"Admin123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.6 Login Operador Logístico (Cuenta Pre-cargada)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "    pm.collectionVariables.set('logisticsToken', res.data.token);",
+                  "    console.log('logisticsToken guardado');",
+                  "}",
+                  "pm.test('Login Logística exitoso', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"logistics@nexus.com\",\n  \"password\": \"Logistics123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Usuarios y Perfiles (Users & Profiles)",
+      "description": "Gestión de direcciones de compradores, actualización fiscal de vendedores y suspensiones.",
+      "item": [
+        {
+          "name": "2.1 Agregar Dirección Secundaria (Comprador)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{buyerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"buyerId\": \"{{buyerId}}\",\n  \"address\": \"Calle 72 # 10-07 Oficina 302, Bogota\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/buyers/secondary-address",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "buyers",
+                "secondary-address"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.2 Actualizar Tax ID de Vendedor",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sellerId\": \"{{sellerId}}\",\n  \"taxId\": \"REG-RUT-901555444-ACTUALIZADO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/sellers/tax-id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "sellers",
+                "tax-id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.3 Suspender Usuario (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/{{sellerId}}/suspend",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{sellerId}}",
+                "suspend"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.4 Reactivar Usuario (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/{{sellerId}}/activate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{sellerId}}",
+                "activate"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Catálogo de Productos (Product Catalog)",
+      "description": "Administración y consulta del catálogo de productos y variantes.",
+      "item": [
+        {
+          "name": "3.1 Crear Producto en Catálogo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res && res.data && res.data.sku) {",
+                  "    pm.collectionVariables.set('sku', res.data.sku);",
+                  "    console.log('sku guardado: ' + res.data.sku);",
+                  "}",
+                  "pm.test('Producto creado', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"SKU-PS5-SLIM\",\n  \"sellerId\": \"{{sellerId}}\",\n  \"name\": \"Consola PlayStation 5 Slim 1TB\",\n  \"description\": \"Edicion Estandar con lector de disco Ultra HD Blu-ray\",\n  \"priceAmount\": 650.0,\n  \"priceCurrency\": \"USD\",\n  \"type\": \"PHYSICAL\",\n  \"variants\": [\n    \"Blanco Estandar\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/catalog/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "catalog",
+                "products"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.2 Actualizar Descripción y Precio de Producto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"{{sku}}\",\n  \"description\": \"Edicion Estandar con lector de disco + Spider-Man 2 Bundle\",\n  \"priceAmount\": 699.99,\n  \"priceCurrency\": \"USD\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/catalog/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "catalog",
+                "products"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.3 Agregar Variante Comercial",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"{{sku}}\",\n  \"variant\": \"Bundle con 2 Controles DualSense\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/catalog/products/variants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "catalog",
+                "products",
+                "variants"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.4 Consultar Producto por SKU",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{buyerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/catalog/products/{{sku}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "catalog",
+                "products",
+                "{{sku}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.5 Listar Productos Activos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{buyerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/catalog/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "catalog",
+                "products"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.6 Desactivar Producto (Borrado Lógico)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/catalog/products/{{sku}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "catalog",
+                "products",
+                "{{sku}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Bodegas (Warehouses)",
+      "description": "Registro y administración de bodegas físicas.",
+      "item": [
+        {
+          "name": "4.1 Registrar Bodega Física",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res && res.data && res.data.id) {",
+                  "    pm.collectionVariables.set('warehouseId', res.data.id);",
+                  "    console.log('warehouseId guardado: ' + res.data.id);",
+                  "}",
+                  "pm.test('Bodega registrada', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ownerId\": \"{{sellerId}}\",\n  \"name\": \"Bodega Principal Sony Calle 100\",\n  \"locationAddress\": \"Av Calle 100 # 19-61, Bogota\",\n  \"type\": \"SELLER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/warehouses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "warehouses"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.2 Desactivar Bodega Física",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/warehouses/{{warehouseId}}/deactivate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "warehouses",
+                "{{warehouseId}}",
+                "deactivate"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Inventario Físico (Inventory)",
+      "description": "Ingreso de stock, reporte de mermas y consulta consolidada de disponibilidad.",
+      "item": [
+        {
+          "name": "5.1 Ingresar Stock Físico a Bodega",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"warehouseId\": \"{{warehouseId}}\",\n  \"sku\": \"{{sku}}\",\n  \"quantity\": 30,\n  \"aisle\": \"P1\",\n  \"shelf\": \"E3\",\n  \"level\": \"N2\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/inventory/stock",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "inventory",
+                "stock"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.2 Reportar Unidades Dañadas / Mermas",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"warehouseId\": \"{{warehouseId}}\",\n  \"sku\": \"{{sku}}\",\n  \"damagedQuantity\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/inventory/damaged",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "inventory",
+                "damaged"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.3 Consultar Stock Disponible Consolidado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{buyerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/inventory/stock/{{sku}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "inventory",
+                "stock",
+                "{{sku}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Carrito y Órdenes (Cart & Orders)",
+      "description": "Ciclo completo de compras: creación de carrito, agregado de items, checkout, pago y cancelación.",
+      "item": [
+        {
+          "name": "6.1 Crear Carrito de Compras",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res && res.data && res.data.id) {",
+                  "    pm.collectionVariables.set('orderId', res.data.id);",
+                  "    console.log('orderId guardado: ' + res.data.id);",
+                  "}",
+                  "pm.test('Carrito creado', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{buyerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"buyerId\": \"{{buyerId}}\",\n  \"currency\": \"USD\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/cart",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "cart"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.2 Agregar Ítem al Carrito",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{buyerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"sku\": \"{{sku}}\",\n  \"quantity\": 2,\n  \"unitPriceAmount\": 699.99,\n  \"currency\": \"USD\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/cart/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "cart",
+                "items"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.3 Eliminar Ítem del Carrito",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{buyerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/{{orderId}}/items/{{sku}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "{{orderId}}",
+                "items",
+                "{{sku}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.4 Checkout de Orden (Reserva Atómica de Stock)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{buyerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"shippingAddress\": \"Carrera 15 # 85-30 Apto 501, Bogota\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/checkout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "checkout"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.5 Confirmar Pago de Orden (Deducción Definitiva de Stock)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{buyerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"paymentReference\": \"TRANS-PSE-9876543210\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/pay",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "pay"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.6 Cancelar Orden (Liberación de Reservas)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{buyerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"reason\": \"Cliente desistio de la compra\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "cancel"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Logística (Logistics)",
+      "description": "Despacho físico y confirmación de entrega al comprador.",
+      "item": [
+        {
+          "name": "7.1 Despachar Orden Pagada",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{logisticsToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"trackingNumber\": \"ENV-SERVI-2026-9900\",\n  \"carrierName\": \"Servientrega Express\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/logistics/ship",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "logistics",
+                "ship"
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.2 Confirmar Entrega al Comprador",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{logisticsToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"receivedBy\": \"Carlos Andres Ramirez (Titular)\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/logistics/deliver",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "logistics",
+                "deliver"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Reembolsos (Refunds)",
+      "description": "Devolución de dinero y reintegro automático de stock a la bodega.",
+      "item": [
+        {
+          "name": "8.1 Procesar Reembolso y Devolución de Stock",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{buyerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"reason\": \"Garantia: Falla tecnica en fuente de alimentacion\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/refunds",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "refunds"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

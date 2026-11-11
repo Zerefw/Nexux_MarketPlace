@@ -39,6 +39,13 @@ public class CancelOrderService implements CancelOrderUseCase {
     @Override
     @Transactional
     public Order execute(CancelOrderCommand command) {
+        if (command.orderId() == null || command.orderId().isBlank()) {
+            throw new DomainException("El identificador de la orden es obligatorio");
+        }
+        if (command.reason() == null || command.reason().isBlank()) {
+            throw new DomainException("El motivo de cancelacion es obligatorio");
+        }
+
         Order order = orderRepositoryPort.findById(command.orderId())
                 .orElseThrow(() -> new DomainException("Orden no encontrada con ID: " + command.orderId()));
 

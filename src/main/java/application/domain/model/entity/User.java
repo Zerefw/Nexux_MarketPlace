@@ -11,7 +11,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 /**
- * Entidad que representa un Usuario.
+ * Entidad que representa un Usuario dentro del Marketplace.
  */
 @Getter
 @Builder
@@ -26,11 +26,22 @@ public class User {
     private LocalDateTime createdAt;
 
     /**
-     * Crea un nuevo usuario.
+     * Crea un nuevo usuario validando todos sus campos obligatorios.
      */
     public static User create(String identificationDocument, String fullName, Email email, UserRole role) {
-        if (identificationDocument == null || identificationDocument.isBlank()) throw new DomainException("El documento de identidad es requerido");
-        
+        if (identificationDocument == null || identificationDocument.isBlank()) {
+            throw new DomainException("El documento de identidad es requerido");
+        }
+        if (fullName == null || fullName.isBlank()) {
+            throw new DomainException("El nombre completo es requerido");
+        }
+        if (email == null) {
+            throw new DomainException("El correo electronico es requerido");
+        }
+        if (role == null) {
+            throw new DomainException("El rol de usuario es requerido");
+        }
+
         return User.builder()
                 .identificationDocument(identificationDocument)
                 .fullName(fullName)
@@ -44,10 +55,14 @@ public class User {
     /**
      * Suspende al usuario.
      */
-    public void suspend() { this.active = false; }
-    
+    public void suspend() {
+        this.active = false;
+    }
+
     /**
      * Activa al usuario.
      */
-    public void activate() { this.active = true; }
+    public void activate() {
+        this.active = true;
+    }
 }
